@@ -11,26 +11,26 @@ final fireStoreInstance = FirebaseFirestore.instance;
 
 class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
   QuoteDataBloc() : super(const QuoteDataState()) {
-    on<FetchQuoteDataEvent>((event, emit) {
-      fetchQuoteData;
-    });
+    on<FetchQuoteDataEvent>(fetchQuoteData);
   }
 
   Future<void> fetchQuoteData(
-      FetchQuoteDataEvent event, Emitter<QuoteDataState> emit) async {
+    FetchQuoteDataEvent event,
+    Emitter<QuoteDataState> emit,
+  ) async {
     try {
       emit(state.copyWith(status: QuoteStateStatus.loading));
-      final docSnapShot = await fireStoreInstance
-          .collection('motivational_quotes')
-          .doc('quote_1')
-          .get();
-      if (docSnapShot.exists) {
-        final quote = Quotes.fromFireStore(docSnapShot);
-        emit(state.copyWith(status: QuoteStateStatus.loaded, quote: quote));
-      } else {
-        emit(state.copyWith(status: QuoteStateStatus.error));
+      final querySnapShot =
+          await fireStoreInstance.collection('motivational_quotes').get();
+      final listOfDoc = querySnapShot.docs.map((doc) => doc.data()).toList();
+      final List<Quotes> listOfQuote = [];
+      for (var maps in listOfDoc) {
+        listOfQuote.add(Quotes.fromFireStore(maps));
       }
+      emit(state.copyWith(
+          status: QuoteStateStatus.loaded, listOfQuotes: listOfQuote));
     } catch (e) {
+      print('exception aavyu...$e');
       emit(state.copyWith(status: QuoteStateStatus.error));
     }
   }

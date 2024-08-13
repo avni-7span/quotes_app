@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
 class Quotes extends Equatable {
@@ -9,10 +8,8 @@ class Quotes extends Equatable {
 
   static const emptyQuoteData = Quotes(author: '', quote: '');
 
-  factory Quotes.fromFireStore(
-      DocumentSnapshot<Map<String, dynamic>> snapshot) {
-    final data = snapshot.data();
-    return Quotes(quote: data?['quote'], author: data?['author']);
+  static fromFireStore(Map<String, dynamic> data) {
+    return Quotes(quote: data['quote'], author: data['author']);
   }
 
   @override

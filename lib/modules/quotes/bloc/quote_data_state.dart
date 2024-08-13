@@ -4,22 +4,21 @@ enum QuoteStateStatus { initial, loading, loaded, error }
 
 class QuoteDataState extends Equatable {
   const QuoteDataState(
-      {this.status = QuoteStateStatus.initial,
-      this.quote = Quotes.emptyQuoteData});
+      {this.status = QuoteStateStatus.initial, this.listOfQuotes = const []});
 
   final QuoteStateStatus status;
-  final Quotes quote;
+  final List<Quotes> listOfQuotes;
 
   @override
-  List<Object?> get props => [status, quote];
+  List<Object?> get props => [status, listOfQuotes];
 
   QuoteDataState copyWith({
     QuoteStateStatus? status,
-    Quotes? quote,
+    List<Quotes>? listOfQuotes,
   }) {
     return QuoteDataState(
       status: status ?? this.status,
-      quote: quote ?? this.quote,
+      listOfQuotes: listOfQuotes ?? this.listOfQuotes,
     );
   }
 }

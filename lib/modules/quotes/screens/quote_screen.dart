@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quotes_app/modules/quotes/bloc/quote_data_bloc.dart';
@@ -10,15 +12,12 @@ class QuoteScreen extends StatefulWidget {
 }
 
 class _QuoteScreenState extends State<QuoteScreen> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<QuoteDataBloc>().add(const FetchQuoteDataEvent());
-  }
+  final Random random = Random();
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<QuoteDataBloc, QuoteDataState>(
+      listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
         if (state.status == QuoteStateStatus.error) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -33,21 +32,38 @@ class _QuoteScreenState extends State<QuoteScreen> {
           title: const Text('Be what you want to be'),
           backgroundColor: Colors.blueAccent.shade100,
         ),
-        body: ListView.builder(
-          itemCount: 11,
-          itemBuilder: (context, index) {
-            return BlocBuilder<QuoteDataBloc, QuoteDataState>(
-              builder: (context, state) {
-                return state.status == QuoteStateStatus.loading
-                    ? const Center(child: CircularProgressIndicator())
-                    : state.status == QuoteStateStatus.loaded
-                        ? ListTile(
-                            title: Text(state.quote.quote!),
-                            subtitle: Text(state.quote.author!),
-                          )
-                        : const SizedBox();
-              },
-            );
+        body: BlocBuilder<QuoteDataBloc, QuoteDataState>(
+          builder: (context, state) {
+            if (state.status == QuoteStateStatus.loading) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (state.status == QuoteStateStatus.loaded) {
+              final randomInt = random.nextInt(state.listOfQuotes.length) + 1;
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        state.listOfQuotes[randomInt].quote ?? '',
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        '- ${state.listOfQuotes[randomInt].author}',
+                        style: const TextStyle(fontSize: 20),
+                      )
+                    ],
+                  ),
+                ),
+              );
+            } else {
+              return const Center(
+                child: Text('No data'),
+              );
+            }
           },
         ),
       ),

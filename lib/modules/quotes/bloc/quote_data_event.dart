@@ -8,4 +8,5 @@ class QuoteDataEvent extends Equatable {
 
 class FetchQuoteDataEvent extends QuoteDataEvent {
   const FetchQuoteDataEvent();
+  // final int quoteNumber;
 }
