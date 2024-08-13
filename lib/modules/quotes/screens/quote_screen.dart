@@ -39,7 +39,7 @@ class _QuoteScreenState extends State<QuoteScreen> {
                 child: CircularProgressIndicator(),
               );
             } else if (state.status == QuoteStateStatus.loaded) {
-              final randomInt = random.nextInt(state.listOfQuotes.length) + 1;
+              final randomInt = random.nextInt(state.listOfQuotes.length);
               return Center(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),

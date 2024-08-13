@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quotes_app/firebase_options.dart';
 import 'package:quotes_app/modules/quotes/bloc/quote_data_bloc.dart';
-import 'package:quotes_app/modules/quotes/screens/quote_screen.dart';
+import 'package:quotes_app/modules/sign_up/bloc/sign_up_bloc.dart';
+import 'package:quotes_app/modules/sign_up/screens/sign_up_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,10 +17,15 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => QuoteDataBloc()..add(const FetchQuoteDataEvent()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+            create: (context) =>
+                QuoteDataBloc()..add(const FetchQuoteDataEvent())),
+        BlocProvider(create: (context) => SignUpBloc())
+      ],
       child: const MaterialApp(
-        home: QuoteScreen(),
+        home: SignUpScreen(),
         debugShowCheckedModeBanner: false,
       ),
     );
