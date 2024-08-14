@@ -8,8 +8,12 @@ class Quotes extends Equatable {
 
   static const emptyQuoteData = Quotes(author: '', quote: '');
 
-  static fromFireStore(Map<String, dynamic> data) {
+  static Quotes fromFireStore(Map<String, dynamic> data) {
     return Quotes(quote: data['quote'], author: data['author']);
+  }
+
+  static Map<String, dynamic> toFireStore(Quotes quote) {
+    return {'quote': quote.quote, 'author': quote.author};
   }
 
   @override

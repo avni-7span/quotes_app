@@ -4,6 +4,8 @@ import 'package:equatable/equatable.dart';
 class User extends Equatable {
   const User({required this.id, required this.email, required this.isAdmin});
 
+  static const empty = User(id: '', email: '', isAdmin: false);
+
   final String? email;
   final String? id;
   final bool? isAdmin;

@@ -1,6 +1,6 @@
 part of 'sign_up_bloc.dart';
 
-enum SignUpStateStatus { initial, loading, success, failure, error }
+enum SignUpStateStatus { initial, loading, success, failure }
 
 class SignUpState extends Equatable {
   const SignUpState(
@@ -8,16 +8,18 @@ class SignUpState extends Equatable {
       this.email = const Email.pure(),
       this.password = const Password.pure(),
       this.isValid = false,
-      this.isAdmin = false});
+      this.isAdmin = false,
+      this.error = ''});
 
   final SignUpStateStatus status;
   final Email email;
   final Password password;
   final bool isValid;
   final bool isAdmin;
+  final String error;
 
   @override
-  List<Object?> get props => [status, password, email, isValid, isAdmin];
+  List<Object?> get props => [status, password, email, isValid, isAdmin, error];
 
   SignUpState copyWith({
     SignUpStateStatus? status,
@@ -25,6 +27,7 @@ class SignUpState extends Equatable {
     Password? password,
     bool? isValid,
     bool? isAdmin,
+    String? error,
   }) {
     return SignUpState(
       status: status ?? this.status,
@@ -32,6 +35,7 @@ class SignUpState extends Equatable {
       password: password ?? this.password,
       isValid: isValid ?? this.isValid,
       isAdmin: isAdmin ?? this.isAdmin,
+      error: error ?? this.error,
     );
   }
 }

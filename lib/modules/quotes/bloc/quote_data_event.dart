@@ -10,3 +10,7 @@ class FetchQuoteDataEvent extends QuoteDataEvent {
   const FetchQuoteDataEvent();
   // final int quoteNumber;
 }
+
+class FetchAdminDetailEvent extends QuoteDataEvent {
+  const FetchAdminDetailEvent();
+}

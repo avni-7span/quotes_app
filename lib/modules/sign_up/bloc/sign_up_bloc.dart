@@ -1,16 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:formz/formz.dart';
+import 'package:quotes_app/core/authentication%20repository/authentication_failure.dart';
 import 'package:quotes_app/core/authentication%20repository/authentication_repository.dart';
 import 'package:quotes_app/core/validators/email_validator.dart';
 import 'package:quotes_app/core/validators/password_validator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 part 'sign_up_event.dart';
 
 part 'sign_up_state.dart';
 
 class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   SignUpBloc() : super(const SignUpState(status: SignUpStateStatus.initial)) {
+    on<SignUpEvent>((event, emit) {});
     on<EmailChangeEvent>((event, emit) {
       final email = Email.dirty(event.email);
       emit(
@@ -34,7 +37,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
         emit(state.copyWith(isAdmin: event.isAdmin));
       },
     );
-    on<SignUpEvent>((event, emit) async {
+    on<SigneUpButtonPressed>((event, emit) async {
       final email = Email.dirty(state.email.value);
       final password = Password.dirty(state.password.value);
       emit(
@@ -56,8 +59,16 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
             'isAdmin': state.isAdmin
           });
           emit(state.copyWith(status: SignUpStateStatus.success));
+        } on FirebaseException catch (e) {
+          emit(
+            state.copyWith(
+                status: SignUpStateStatus.failure,
+                error: SignUpWithEmailAndPasswordFailure(e.code).message),
+          );
         } catch (e) {
-          emit(state.copyWith(status: SignUpStateStatus.failure));
+          emit(state.copyWith(
+              status: SignUpStateStatus.failure,
+              error: 'Something went wrong'));
         }
       }
     });

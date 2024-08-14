@@ -20,3 +20,7 @@ class AdminCheckEvent extends SignUpEvent {
   const AdminCheckEvent(this.isAdmin);
   final bool isAdmin;
 }
+
+class SigneUpButtonPressed extends SignUpEvent {
+  const SigneUpButtonPressed();
+}

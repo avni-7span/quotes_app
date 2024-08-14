@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quotes_app/modules/create_quote/create_quote_screen.dart';
 import 'package:quotes_app/modules/quotes/bloc/quote_data_bloc.dart';
 
 class QuoteScreen extends StatefulWidget {
@@ -54,7 +55,24 @@ class _QuoteScreenState extends State<QuoteScreen> {
                       Text(
                         '- ${state.listOfQuotes[randomInt].author}',
                         style: const TextStyle(fontSize: 20),
-                      )
+                      ),
+                      const SizedBox(height: 30),
+                      if (state.user.isAdmin!)
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.purple.shade100),
+                          onPressed: () {
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (context) => const CreateQuoteScreen(),
+                              ),
+                            );
+                          },
+                          child: const Text(
+                            'Create Quotes',
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        )
                     ],
                   ),
                 ),
