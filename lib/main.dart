@@ -6,7 +6,6 @@ import 'package:quotes_app/modules/login/bloc/login_bloc.dart';
 import 'package:quotes_app/modules/login/screens/login_screen.dart';
 import 'package:quotes_app/modules/quotes/bloc/quote_data_bloc.dart';
 import 'package:quotes_app/modules/sign_up/bloc/sign_up_bloc.dart';
-import 'package:quotes_app/modules/sign_up/screens/sign_up_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

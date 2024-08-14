@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
@@ -34,13 +36,12 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
       emit(state.copyWith(
           status: QuoteStateStatus.loaded, listOfQuotes: listOfQuote));
     } catch (e) {
-      print('exception aavyu...$e');
       emit(state.copyWith(status: QuoteStateStatus.error));
     }
   }
 
   Future<void> fetchAdminDetails(
-      FetchAdminDetailEvent, Emitter<QuoteDataState> emit) async {
+      FetchAdminDetailEvent event, Emitter<QuoteDataState> emit) async {
     try {
       emit(state.copyWith(status: QuoteStateStatus.loading));
       final docSnapShot = await fireStoreInstance

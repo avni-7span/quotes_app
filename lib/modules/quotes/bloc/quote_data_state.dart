@@ -1,6 +1,12 @@
 part of 'quote_data_bloc.dart';
 
-enum QuoteStateStatus { initial, loading, loaded, error, adminFetched }
+enum QuoteStateStatus {
+  initial,
+  loading,
+  loaded,
+  error,
+  adminFetched,
+}
 
 class QuoteDataState extends Equatable {
   const QuoteDataState(

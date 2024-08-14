@@ -1,8 +1,8 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quotes_app/modules/create_quote/create_quote_screen.dart';
+import 'package:quotes_app/modules/admin_quote_list/screens/admin_quote_list_screen.dart';
+import 'package:quotes_app/modules/create_quote/screens/create_quote_screen.dart';
 import 'package:quotes_app/modules/quotes/bloc/quote_data_bloc.dart';
 
 class QuoteScreen extends StatefulWidget {
@@ -32,6 +32,28 @@ class _QuoteScreenState extends State<QuoteScreen> {
         appBar: AppBar(
           title: const Text('Be what you want to be'),
           backgroundColor: Colors.blueAccent.shade100,
+        ),
+        endDrawer: Drawer(
+          child: ListView(
+            children: [
+              DrawerHeader(
+                decoration: BoxDecoration(color: Colors.blue.shade100),
+                child: null,
+              ),
+              ListTile(
+                leading: const Icon(Icons.file_copy_outlined),
+                title: const Text('My Quotes'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AdminQuoteListScreen(),
+                    ),
+                  );
+                },
+              )
+            ],
+          ),
         ),
         body: BlocBuilder<QuoteDataBloc, QuoteDataState>(
           builder: (context, state) {
