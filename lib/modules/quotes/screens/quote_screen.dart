@@ -1,10 +1,14 @@
-import 'dart:math';
+import 'package:auto_route/auto_route.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quotes_app/modules/admin_quote_list/screens/admin_quote_list_screen.dart';
-import 'package:quotes_app/modules/create_quote/screens/create_quote_screen.dart';
+import 'package:quotes_app/core/constants/colors/colors.dart';
+import 'package:quotes_app/core/routes/router.gr.dart';
 import 'package:quotes_app/modules/quotes/bloc/quote_data_bloc.dart';
+import 'package:quotes_app/modules/quotes/widgets/drawer_list_view_widget.dart';
+import 'package:quotes_app/modules/quotes/widgets/quote_card.dart';
 
+@RoutePage()
 class QuoteScreen extends StatefulWidget {
   const QuoteScreen({super.key});
 
@@ -13,10 +17,9 @@ class QuoteScreen extends StatefulWidget {
 }
 
 class _QuoteScreenState extends State<QuoteScreen> {
-  final Random random = Random();
-
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return BlocListener<QuoteDataBloc, QuoteDataState>(
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
@@ -29,80 +32,76 @@ class _QuoteScreenState extends State<QuoteScreen> {
         }
       },
       child: Scaffold(
+        // floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        extendBodyBehindAppBar: true,
         appBar: AppBar(
-          title: const Text('Be what you want to be'),
-          backgroundColor: Colors.blueAccent.shade100,
+            title: const Text(
+              'Be what you want to be',
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.transparent,
+            iconTheme: const IconThemeData(color: Colors.white)),
+        drawer: const Drawer(
+          child: DrawerListViewWidget(),
         ),
-        endDrawer: Drawer(
-          child: ListView(
-            children: [
-              DrawerHeader(
-                decoration: BoxDecoration(color: Colors.blue.shade100),
-                child: null,
-              ),
-              ListTile(
-                leading: const Icon(Icons.file_copy_outlined),
-                title: const Text('My Quotes'),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const AdminQuoteListScreen(),
-                    ),
-                  );
-                },
-              )
-            ],
-          ),
+        body: Stack(
+          children: [
+            Container(
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                      image: AssetImage('assets/bkg_pic.jpeg'),
+                      fit: BoxFit.cover),
+                ),
+                child: null),
+            BlocBuilder<QuoteDataBloc, QuoteDataState>(
+              builder: (context, state) {
+                return Align(
+                    alignment: Alignment.center,
+                    child: CarouselSlider(
+                      items: List<QuoteCard>.generate(
+                        state.listOfQuotes.length,
+                        (int) => QuoteCard(index: int),
+                      ),
+                      options: CarouselOptions(
+                          height: size.height - 200,
+                          reverse: true,
+                          initialPage: 0,
+                          enableInfiniteScroll: false),
+                    ));
+              },
+            )
+          ],
         ),
-        body: BlocBuilder<QuoteDataBloc, QuoteDataState>(
+        floatingActionButton: BlocBuilder<QuoteDataBloc, QuoteDataState>(
           builder: (context, state) {
-            if (state.status == QuoteStateStatus.loading) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else if (state.status == QuoteStateStatus.loaded) {
-              final randomInt = random.nextInt(state.listOfQuotes.length);
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+            if (state.user.isAdmin!) {
+              return SizedBox(
+                height: 50,
+                child: MaterialButton(
+                  color: Colors.black.withOpacity(0.8),
+                  onPressed: () {
+                    context.router.push(const CreateQuoteRoute());
+                  },
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        state.listOfQuotes[randomInt].quote ?? '',
-                        style: const TextStyle(fontSize: 20),
+                      Icon(
+                        Icons.create_outlined,
+                        color: ColorPallet.lotusPink,
                       ),
-                      const SizedBox(height: 20),
                       Text(
-                        '- ${state.listOfQuotes[randomInt].author}',
-                        style: const TextStyle(fontSize: 20),
-                      ),
-                      const SizedBox(height: 30),
-                      if (state.user.isAdmin!)
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.purple.shade100),
-                          onPressed: () {
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                builder: (context) => const CreateQuoteScreen(),
-                              ),
-                            );
-                          },
-                          child: const Text(
-                            'Create Quotes',
-                            style: TextStyle(color: Colors.black),
-                          ),
-                        )
+                        '  Create Quote',
+                        style: TextStyle(
+                            color: ColorPallet.lotusPink, fontSize: 18),
+                      )
                     ],
                   ),
                 ),
               );
             } else {
-              return const Center(
-                child: Text('No data'),
-              );
+              return const SizedBox();
             }
           },
         ),

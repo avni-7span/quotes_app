@@ -14,3 +14,14 @@ class FetchQuoteDataEvent extends QuoteDataEvent {
 class FetchAdminDetailEvent extends QuoteDataEvent {
   const FetchAdminDetailEvent();
 }
+
+class GenerateSetOfRandomInteger extends QuoteDataEvent {
+  const GenerateSetOfRandomInteger();
+}
+
+class TakeScreenShotAndShare extends QuoteDataEvent {
+  const TakeScreenShotAndShare(
+      {required this.screenshotController, this.index = 0});
+  final ScreenshotController screenshotController;
+  final int index;
+}
