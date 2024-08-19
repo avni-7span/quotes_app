@@ -5,11 +5,12 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:quotes_app/core/model/quote_data_model/quotes_data_model.dart';
-import 'package:quotes_app/core/model/user_model/user_model.dart';
+import 'package:quotes_app/core/model/quote-data-model/quotes_data_model.dart';
+import 'package:quotes_app/core/model/user-model/user_model.dart';
 import 'package:quotes_app/modules/quotes/widgets/screenshot_widget.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
@@ -26,7 +27,9 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
   QuoteDataBloc() : super(const QuoteDataState()) {
     on<FetchQuoteDataEvent>(fetchQuoteData);
     on<FetchAdminDetailEvent>(fetchAdminDetails);
-    on<TakeScreenShotAndShare>(takeScreenShotAndShare);
+    on<TakeScreenShotAndShareEvent>(takeScreenShotAndShare);
+    on<ShareAsTextEvent>(shareAsText);
+    on<CopyQuoteToClipBoardEvent>(copyQuoteToClipboard);
   }
 
   Future<void> fetchQuoteData(
@@ -70,20 +73,56 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
   }
 
   Future<FutureOr<void>> takeScreenShotAndShare(
-      TakeScreenShotAndShare event, Emitter<QuoteDataState> emit) async {
-    // final image = await event.screenshotController
-    //     .capture(delay: const Duration(milliseconds: 10), pixelRatio: 2.0);
-    final image = await event.screenshotController.captureFromWidget(
-        ScreenshotWidget(
+    TakeScreenShotAndShareEvent event,
+    Emitter<QuoteDataState> emit,
+  ) async {
+    try {
+      final image = await event.screenshotController.captureFromWidget(
+        pixelRatio: 2.0,
+        Material(
+          child: ScreenshotWidget(
             quote: state.listOfQuotes[event.index].quote ?? '',
-            author: state.listOfQuotes[event.index].author ?? ''));
-    final path = (await getApplicationDocumentsDirectory()).path;
-    if (image != null) {
-      File imageFile = await File('$path/screenshot.jpeg').create();
-      imageFile.writeAsBytes(image);
-      XFile file = XFile(imageFile.path);
+            author: state.listOfQuotes[event.index].author ?? '',
+          ),
+        ),
+      );
+      final path = (await getApplicationDocumentsDirectory()).path;
+      File imgFile = await File('$path/screenshot.jpeg').create();
+      imgFile.writeAsBytes(image);
+      XFile file = XFile(imgFile.path);
       await Share.shareXFiles([file]);
-      // if (result.status == ShareResultStatus.success) {}
+    } catch (e) {
+      emit(
+        state.copyWith(status: QuoteStateStatus.error),
+      );
+    }
+  }
+
+  Future<void> shareAsText(
+      ShareAsTextEvent event, Emitter<QuoteDataState> emit) async {
+    try {
+      await Share.share(
+          '\"${state.listOfQuotes[event.index].quote}\" - ${state.listOfQuotes[event.index].author}');
+    } catch (e) {
+      emit(
+        state.copyWith(status: QuoteStateStatus.error),
+      );
+    }
+  }
+
+  Future<FutureOr<void>> copyQuoteToClipboard(
+      CopyQuoteToClipBoardEvent event, Emitter<QuoteDataState> emit) async {
+    try {
+      await Clipboard.setData(ClipboardData(
+          text:
+              '\"${state.listOfQuotes[event.index].quote}\" - ${state.listOfQuotes[event.index].author}'));
+      if (ClipboardStatus == ClipboardStatus.pasteable) {
+        emit(state.copyWith(status: QuoteStateStatus.copiedSuccessfully));
+      } else {
+        emit(state.copyWith(status: QuoteStateStatus.error));
+      }
+    } catch (e) {
+      state.copyWith(status: QuoteStateStatus.error);
     }
   }
 }

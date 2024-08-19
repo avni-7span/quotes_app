@@ -5,9 +5,9 @@ import 'package:quotes_app/core/routes/router.dart';
 import 'package:quotes_app/firebase_options.dart';
 import 'package:quotes_app/modules/login/bloc/login_bloc.dart';
 import 'package:quotes_app/modules/quotes/bloc/quote_data_bloc.dart';
-import 'package:quotes_app/modules/sign_up/bloc/sign_up_bloc.dart';
+import 'package:quotes_app/modules/sign-up/bloc/sign_up_bloc.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(App());

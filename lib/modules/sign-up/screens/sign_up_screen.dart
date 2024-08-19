@@ -2,7 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quotes_app/core/routes/router.gr.dart';
-import 'package:quotes_app/modules/sign_up/bloc/sign_up_bloc.dart';
+import 'package:quotes_app/modules/sign-up/bloc/sign_up_bloc.dart';
 
 @RoutePage()
 class SignUpScreen extends StatefulWidget {

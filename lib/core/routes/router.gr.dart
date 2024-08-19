@@ -9,13 +9,13 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:auto_route/auto_route.dart' as _i6;
-import 'package:quotes_app/modules/admin_quote_list/screens/admin_quote_list_screen.dart'
+import 'package:quotes_app/modules/admin-quote-list/screens/admin_quote_list_screen.dart'
     as _i1;
-import 'package:quotes_app/modules/create_quote/screens/create_quote_screen.dart'
+import 'package:quotes_app/modules/create-quote/screens/create_quote_screen.dart'
     as _i2;
 import 'package:quotes_app/modules/login/screens/login_screen.dart' as _i3;
 import 'package:quotes_app/modules/quotes/screens/quote_screen.dart' as _i4;
-import 'package:quotes_app/modules/sign_up/screens/sign_up_screen.dart' as _i5;
+import 'package:quotes_app/modules/sign-up/screens/sign_up_screen.dart' as _i5;
 
 /// generated route for
 /// [_i1.AdminQuoteListScreen]

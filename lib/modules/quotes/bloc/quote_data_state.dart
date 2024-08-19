@@ -6,6 +6,7 @@ enum QuoteStateStatus {
   loaded,
   error,
   adminFetched,
+  copiedSuccessfully
 }
 
 class QuoteDataState extends Equatable {

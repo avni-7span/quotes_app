@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:formz/formz.dart';
-import 'package:quotes_app/core/authentication%20repository/authentication_failure.dart';
-import 'package:quotes_app/core/authentication%20repository/authentication_repository.dart';
+import 'package:quotes_app/core/authentication-repository/authentication_failure.dart';
+import 'package:quotes_app/core/authentication-repository/authentication_repository.dart';
 import 'package:quotes_app/core/validators/email_validator.dart';
 import 'package:quotes_app/core/validators/password_validator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

@@ -29,6 +29,15 @@ class _QuoteScreenState extends State<QuoteScreen> {
               content: Text('Something went wrong'),
             ),
           );
+          return;
+        }
+        if (state.status == QuoteStateStatus.copiedSuccessfully) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Quote copied to clipboard.'),
+            ),
+          );
+          return;
         }
       },
       child: Scaffold(

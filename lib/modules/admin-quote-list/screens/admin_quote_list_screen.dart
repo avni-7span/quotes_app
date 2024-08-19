@@ -2,7 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quotes_app/core/constants/colors/colors.dart';
-import 'package:quotes_app/modules/admin_quote_list/bloc/admin_quote_list_bloc.dart';
+import 'package:quotes_app/modules/admin-quote-list/bloc/admin_quote_list_bloc.dart';
 
 @RoutePage()
 class AdminQuoteListScreen extends StatelessWidget {

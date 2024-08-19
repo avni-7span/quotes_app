@@ -19,7 +19,7 @@ class _QuoteCardState extends State<QuoteCard> {
   Future _showBottomSheet() {
     return showModalBottomSheet(
         context: context,
-        builder: (context) {
+        builder: (_context) {
           return BottomSheetWidget(
               screenshotController: _screenShotController, index: widget.index);
         });

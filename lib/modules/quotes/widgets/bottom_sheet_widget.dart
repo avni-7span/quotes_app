@@ -1,5 +1,7 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quotes_app/core/routes/router.gr.dart';
 import 'package:quotes_app/modules/quotes/bloc/quote_data_bloc.dart';
 import 'package:screenshot/screenshot.dart';
 
@@ -23,7 +25,11 @@ class BottomSheetWidget extends StatelessWidget {
             Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                IconButton(onPressed: () {}, icon: const Icon(Icons.share)),
+                IconButton(
+                    onPressed: () => context.read<QuoteDataBloc>().add(
+                          ShareAsTextEvent(index: index),
+                        ),
+                    icon: const Icon(Icons.share)),
                 const Text('Share as text')
               ],
             ),
@@ -33,11 +39,25 @@ class BottomSheetWidget extends StatelessWidget {
               children: [
                 IconButton(
                     onPressed: () => context.read<QuoteDataBloc>().add(
-                        TakeScreenShotAndShare(
-                            screenshotController: screenshotController,
-                            index: index)),
+                          TakeScreenShotAndShareEvent(
+                              screenshotController: screenshotController,
+                              index: index),
+                        ),
                     icon: const Icon(Icons.send)),
                 const Text('Share as image')
+              ],
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                    onPressed: () {
+                      context.read<QuoteDataBloc>().add(
+                            CopyQuoteToClipBoardEvent(index: index),
+                          );
+                    },
+                    icon: const Icon(Icons.copy)),
+                const Text('Copy Quote')
               ],
             ),
           ],

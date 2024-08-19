@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quotes_app/core/constants/colors/colors.dart';
 import 'package:quotes_app/core/routes/router.gr.dart';
-import 'package:quotes_app/modules/create_quote/bloc/admin_quote_bloc.dart';
+import 'package:quotes_app/modules/create-quote/bloc/admin_quote_bloc.dart';
 
 @RoutePage()
 class CreateQuoteScreen extends StatefulWidget {

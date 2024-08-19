@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:quotes_app/core/model/quote_data_model/quotes_data_model.dart';
+import 'package:quotes_app/core/model/quote-data-model/quotes_data_model.dart';
 
 part 'admin_quote_list_event.dart';
 

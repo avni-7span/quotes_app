@@ -15,13 +15,23 @@ class FetchAdminDetailEvent extends QuoteDataEvent {
   const FetchAdminDetailEvent();
 }
 
-class GenerateSetOfRandomInteger extends QuoteDataEvent {
-  const GenerateSetOfRandomInteger();
+class GenerateSetOfRandomIntegerEvent extends QuoteDataEvent {
+  const GenerateSetOfRandomIntegerEvent();
 }
 
-class TakeScreenShotAndShare extends QuoteDataEvent {
-  const TakeScreenShotAndShare(
+class TakeScreenShotAndShareEvent extends QuoteDataEvent {
+  const TakeScreenShotAndShareEvent(
       {required this.screenshotController, this.index = 0});
   final ScreenshotController screenshotController;
+  final int index;
+}
+
+class ShareAsTextEvent extends QuoteDataEvent {
+  const ShareAsTextEvent({required this.index});
+  final int index;
+}
+
+class CopyQuoteToClipBoardEvent extends QuoteDataEvent {
+  const CopyQuoteToClipBoardEvent({required this.index});
   final int index;
 }
