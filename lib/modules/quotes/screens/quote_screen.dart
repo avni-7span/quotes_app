@@ -3,10 +3,12 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quotes_app/core/constants/colors/colors.dart';
-import 'package:quotes_app/core/routes/router.gr.dart';
+import 'package:quotes_app/core/routes/router/router.gr.dart';
 import 'package:quotes_app/modules/quotes/bloc/quote_data_bloc.dart';
+import 'package:quotes_app/modules/quotes/widgets/bottom_sheet_widget.dart';
 import 'package:quotes_app/modules/quotes/widgets/drawer_list_view_widget.dart';
 import 'package:quotes_app/modules/quotes/widgets/quote_card.dart';
+import 'package:screenshot/screenshot.dart';
 
 @RoutePage()
 class QuoteScreen extends StatefulWidget {
@@ -17,6 +19,23 @@ class QuoteScreen extends StatefulWidget {
 }
 
 class _QuoteScreenState extends State<QuoteScreen> {
+  final ScreenshotController _screenshotController = ScreenshotController();
+
+  Future _showBottomSheet() {
+    return showModalBottomSheet(
+      context: context,
+      builder: (_context) {
+        return BottomSheetWidget(
+          screenshotController: _screenshotController,
+          index: _currentIndex,
+          passedContext: _context,
+        );
+      },
+    );
+  }
+
+  late int _currentIndex;
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -41,11 +60,10 @@ class _QuoteScreenState extends State<QuoteScreen> {
         }
       },
       child: Scaffold(
-        // floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         extendBodyBehindAppBar: true,
         appBar: AppBar(
             title: const Text(
-              'Be what you want to be',
+              'Be What You Want To Be',
               style: TextStyle(color: Colors.white),
             ),
             backgroundColor: Colors.transparent,
@@ -65,53 +83,78 @@ class _QuoteScreenState extends State<QuoteScreen> {
             BlocBuilder<QuoteDataBloc, QuoteDataState>(
               builder: (context, state) {
                 return Align(
-                    alignment: Alignment.center,
-                    child: CarouselSlider(
-                      items: List<QuoteCard>.generate(
-                        state.listOfQuotes.length,
-                        (int) => QuoteCard(index: int),
-                      ),
-                      options: CarouselOptions(
-                          height: size.height - 200,
-                          reverse: true,
-                          initialPage: 0,
-                          enableInfiniteScroll: false),
-                    ));
+                  alignment: Alignment.center,
+                  child: CarouselSlider(
+                    items: List<QuoteCard>.generate(
+                      state.listOfQuotes.length,
+                      (int) {
+                        return QuoteCard(index: int);
+                      },
+                    ),
+                    options: CarouselOptions(
+                      height: size.height - 200,
+                      reverse: true,
+                      initialPage: 0,
+                      enableInfiniteScroll: false,
+                      onPageChanged: (index, _) {
+                        setState(() {
+                          _currentIndex = index;
+                        });
+                      },
+                    ),
+                  ),
+                );
               },
             )
           ],
         ),
         floatingActionButton: BlocBuilder<QuoteDataBloc, QuoteDataState>(
           builder: (context, state) {
-            if (state.user.isAdmin!) {
-              return SizedBox(
-                height: 50,
-                child: MaterialButton(
-                  color: Colors.black.withOpacity(0.8),
-                  onPressed: () {
-                    context.router.push(const CreateQuoteRoute());
-                  },
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.create_outlined,
+            return Padding(
+              padding: const EdgeInsets.only(left: 30),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                    height: 60,
+                    width: 60,
+                    child: MaterialButton(
+                      color: Colors.black.withOpacity(0.8),
+                      onPressed: _showBottomSheet,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Icon(
+                        Icons.more_vert,
+                        size: 30,
                         color: ColorPallet.lotusPink,
                       ),
-                      Text(
-                        '  Create Quote',
-                        style: TextStyle(
-                            color: ColorPallet.lotusPink, fontSize: 18),
-                      )
-                    ],
+                    ),
                   ),
-                ),
-              );
-            } else {
-              return const SizedBox();
-            }
+                  if (state.user.isAdmin!)
+                    SizedBox(
+                      height: 60,
+                      width: 60,
+                      child: MaterialButton(
+                        color: Colors.black.withOpacity(0.8),
+                        onPressed: () async {
+                          await context.router.push(const CreateQuoteRoute());
+                        },
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Icon(
+                          Icons.add,
+                          size: 30,
+                          color: ColorPallet.lotusPink,
+                        ),
+                      ),
+                    )
+                  else
+                    const SizedBox(height: 60, width: 60),
+                ],
+              ),
+            );
           },
         ),
       ),

@@ -43,15 +43,15 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
       final listOfDoc = querySnapShot.docs.map((doc) => doc.data()).toList();
       final List<Quotes> listOfQuote = [];
       for (var maps in listOfDoc) {
-        listOfQuote.add(Quotes.fromFireStore(maps));
+        listOfQuote.add(
+          Quotes.fromFireStore(maps),
+        );
       }
-      print(
-          'shuffle vagar ni :${listOfQuote[1].quote} & ${listOfQuote[2].quote}');
       final List<Quotes> shuffledList = listOfQuote..shuffle();
-      print(
-          'shuffle vali :${shuffledList[1].quote} & ${shuffledList[2].quote}');
-      emit(state.copyWith(
-          status: QuoteStateStatus.loaded, listOfQuotes: listOfQuote));
+      emit(
+        state.copyWith(
+            status: QuoteStateStatus.loaded, listOfQuotes: shuffledList),
+      );
     } catch (e) {
       emit(state.copyWith(status: QuoteStateStatus.error));
     }
@@ -72,7 +72,7 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
     }
   }
 
-  Future<FutureOr<void>> takeScreenShotAndShare(
+  Future<void> takeScreenShotAndShare(
     TakeScreenShotAndShareEvent event,
     Emitter<QuoteDataState> emit,
   ) async {
@@ -102,7 +102,8 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
       ShareAsTextEvent event, Emitter<QuoteDataState> emit) async {
     try {
       await Share.share(
-          '\"${state.listOfQuotes[event.index].quote}\" - ${state.listOfQuotes[event.index].author}');
+        '\"${state.listOfQuotes[event.index].quote}\" - ${state.listOfQuotes[event.index].author}',
+      );
     } catch (e) {
       emit(
         state.copyWith(status: QuoteStateStatus.error),
@@ -110,12 +111,15 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
     }
   }
 
-  Future<FutureOr<void>> copyQuoteToClipboard(
+  Future<void> copyQuoteToClipboard(
       CopyQuoteToClipBoardEvent event, Emitter<QuoteDataState> emit) async {
     try {
-      await Clipboard.setData(ClipboardData(
+      await Clipboard.setData(
+        ClipboardData(
           text:
-              '\"${state.listOfQuotes[event.index].quote}\" - ${state.listOfQuotes[event.index].author}'));
+              '\"${state.listOfQuotes[event.index].quote}\" - ${state.listOfQuotes[event.index].author}',
+        ),
+      );
       if (ClipboardStatus == ClipboardStatus.pasteable) {
         emit(state.copyWith(status: QuoteStateStatus.copiedSuccessfully));
       } else {

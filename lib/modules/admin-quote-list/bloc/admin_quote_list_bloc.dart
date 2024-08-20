@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
@@ -17,31 +19,54 @@ class AdminQuoteListBloc
       : super(const AdminQuoteListState(
             status: AdminQuoteListStateStatus.initial)) {
     on<AdminQuoteListEvent>((event, emit) {});
-    on<FetchingAdminQuoteListEvent>((event, emit) async {
-      try {
-        emit(state.copyWith(status: AdminQuoteListStateStatus.fetching));
-        final querySnapShot =
-            await fireStoreInstance.collection('motivational_quotes').get();
-        final listOfDoc = querySnapShot.docs.map((doc) => doc.data()).toList();
-        final List<Quotes> listOfAdminQuote = [];
-        for (var maps in listOfDoc) {
-          if (maps['id'] == firebaseAuth.currentUser?.uid) {
-            listOfAdminQuote.add(
-              Quotes.fromFireStore(maps),
-            );
-          }
+    on<FetchingAdminQuoteListEvent>(_fetchAdminQuoteList);
+    on<EditQuoteEvent>(_editQuote);
+    on<DeleteQuoteEvent>(_deleteQuote);
+  }
+
+  Future<void> _fetchAdminQuoteList(FetchingAdminQuoteListEvent event,
+      Emitter<AdminQuoteListState> emit) async {
+    try {
+      emit(state.copyWith(status: AdminQuoteListStateStatus.fetching));
+      final querySnapShot =
+          await fireStoreInstance.collection('motivational_quotes').get();
+      final listOfDoc = querySnapShot.docs.map((doc) => doc.data()).toList();
+      final List<Quotes> listOfAdminQuote = [];
+      for (var maps in listOfDoc) {
+        if (maps['id'] == firebaseAuth.currentUser?.uid) {
+          listOfAdminQuote.add(
+            Quotes.fromFireStore(maps),
+          );
         }
-        emit(
-          state.copyWith(
-              listOfAdminQuotes: listOfAdminQuote,
-              status: AdminQuoteListStateStatus.loaded),
-        );
-      } catch (e) {
-        emit(
-          state.copyWith(
-              status: AdminQuoteListStateStatus.failure, error: e.toString()),
-        );
       }
-    });
+      emit(
+        state.copyWith(
+            listOfAdminQuotes: listOfAdminQuote,
+            status: AdminQuoteListStateStatus.loaded),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+            status: AdminQuoteListStateStatus.failure, error: e.toString()),
+      );
+    }
+  }
+
+  Future<void> _editQuote(
+      EditQuoteEvent event, Emitter<AdminQuoteListState> emit) async {}
+
+  Future<void> _deleteQuote(
+      DeleteQuoteEvent event, Emitter<AdminQuoteListState> emit) async {
+    try {
+      emit(state.copyWith(status: AdminQuoteListStateStatus.loading));
+      // fireStoreInstance.collection('motivational_quotes').doc().delete();
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: AdminQuoteListStateStatus.failure,
+          error: e.toString(),
+        ),
+      );
+    }
   }
 }

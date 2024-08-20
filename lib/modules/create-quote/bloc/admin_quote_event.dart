@@ -8,12 +8,8 @@ class AdminQuoteEvent extends Equatable {
 }
 
 class AddQuoteToFireStoreEvent extends AdminQuoteEvent {
-  const AddQuoteToFireStoreEvent();
-}
-
-class AuthorFieldChangeEvent extends AdminQuoteEvent {
-  const AuthorFieldChangeEvent(this.authorName);
-  final String authorName;
+  const AddQuoteToFireStoreEvent({required this.author});
+  final String author;
 }
 
 class QuoteFieldChangeEvent extends AdminQuoteEvent {

@@ -21,7 +21,7 @@ class GenerateSetOfRandomIntegerEvent extends QuoteDataEvent {
 
 class TakeScreenShotAndShareEvent extends QuoteDataEvent {
   const TakeScreenShotAndShareEvent(
-      {required this.screenshotController, this.index = 0});
+      {required this.screenshotController, required this.index});
   final ScreenshotController screenshotController;
   final int index;
 }

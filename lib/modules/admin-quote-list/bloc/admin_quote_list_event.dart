@@ -10,3 +10,11 @@ class AdminQuoteListEvent extends Equatable {
 class FetchingAdminQuoteListEvent extends AdminQuoteListEvent {
   const FetchingAdminQuoteListEvent();
 }
+
+class EditQuoteEvent extends AdminQuoteListEvent {
+  const EditQuoteEvent();
+}
+
+class DeleteQuoteEvent extends AdminQuoteListEvent {
+  const DeleteQuoteEvent();
+}

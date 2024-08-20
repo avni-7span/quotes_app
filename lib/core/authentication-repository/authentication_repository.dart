@@ -11,6 +11,8 @@ class AuthenticationRepository {
   AuthenticationRepository._internal()
       : _firebaseAuth = firebase_auth.FirebaseAuth.instance;
 
+  firebase_auth.User? get currentUser => _firebaseAuth.currentUser;
+
   Future<firebase_auth.UserCredential> loginWithEmailPassword(
       {required String email, required String password}) async {
     final user = await _firebaseAuth.signInWithEmailAndPassword(
@@ -23,5 +25,9 @@ class AuthenticationRepository {
     final user = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email, password: password);
     return user;
+  }
+
+  Future<void> logOut() async {
+    await _firebaseAuth.signOut();
   }
 }

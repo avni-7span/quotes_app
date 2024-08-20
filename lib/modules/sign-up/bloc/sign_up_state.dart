@@ -3,13 +3,14 @@ part of 'sign_up_bloc.dart';
 enum SignUpStateStatus { initial, loading, success, failure }
 
 class SignUpState extends Equatable {
-  const SignUpState(
-      {this.status = SignUpStateStatus.initial,
-      this.email = const Email.pure(),
-      this.password = const Password.pure(),
-      this.isValid = false,
-      this.isAdmin = false,
-      this.error = ''});
+  const SignUpState({
+    this.status = SignUpStateStatus.initial,
+    this.email = const Email.pure(),
+    this.password = const Password.pure(),
+    this.isValid = false,
+    this.isAdmin = false,
+    this.error = '',
+  });
 
   final SignUpStateStatus status;
   final Email email;

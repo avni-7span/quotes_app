@@ -1,7 +1,9 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quotes_app/core/constants/colors/colors.dart';
-import 'package:quotes_app/core/routes/router.gr.dart';
+import 'package:quotes_app/core/routes/router/router.gr.dart';
+import 'package:quotes_app/modules/logout/bloc/logout_bloc.dart';
 
 class DrawerListViewWidget extends StatelessWidget {
   const DrawerListViewWidget({
@@ -22,8 +24,8 @@ class DrawerListViewWidget extends StatelessWidget {
             'My Quotes',
             style: TextStyle(color: Colors.black),
           ),
-          onTap: () {
-            context.router.push(const AdminQuoteListRoute());
+          onTap: () async {
+            await context.router.push(const AdminQuoteListRoute());
           },
         ),
         ListTile(
@@ -49,7 +51,51 @@ class DrawerListViewWidget extends StatelessWidget {
             style: TextStyle(color: Colors.black),
           ),
           onTap: () {},
-        )
+        ),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10),
+          child: Divider(
+            color: Colors.black,
+          ),
+        ),
+        BlocProvider(
+          create: (context) => LogoutBloc(),
+          child: BlocBuilder<LogoutBloc, LogoutState>(
+            builder: (context, state) {
+              return ListTile(
+                leading: const Icon(Icons.logout_outlined),
+                title: const Text(
+                  'Logout',
+                  style: TextStyle(color: Colors.black),
+                ),
+                onTap: () async {
+                  context.read<LogoutBloc>().add(const LogoutEvent());
+                  if (state.status == LogoutStateStatus.loading) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Please wait,we are logging you out'),
+                      ),
+                    );
+                    return;
+                  }
+                  if (state.status == LogoutStateStatus.success) {
+                    await context.router.replace(const LoginRoute());
+                    return;
+                  }
+                  if (state.status == LogoutStateStatus.failure) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content:
+                            Text('Something went wrong please try again later'),
+                      ),
+                    );
+                    return;
+                  }
+                },
+              );
+            },
+          ),
+        ),
       ],
     );
   }

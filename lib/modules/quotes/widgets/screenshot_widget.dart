@@ -12,10 +12,11 @@ class ScreenshotWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: const BoxDecoration(
-          gradient: LinearGradient(
-              colors: [Colors.blue, Colors.white],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter)),
+        gradient: LinearGradient(
+            colors: [Colors.blue, Colors.white],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter),
+      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

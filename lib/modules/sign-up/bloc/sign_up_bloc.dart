@@ -34,7 +34,9 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     });
     on<AdminCheckEvent>(
       (event, emit) {
-        emit(state.copyWith(isAdmin: event.isAdmin));
+        emit(
+          state.copyWith(isAdmin: event.isAdmin),
+        );
       },
     );
     on<SigneUpButtonPressed>((event, emit) async {
@@ -68,9 +70,12 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
                 error: SignUpWithEmailAndPasswordFailure(e.code).message),
           );
         } catch (e) {
-          emit(state.copyWith(
+          emit(
+            state.copyWith(
               status: SignUpStateStatus.failure,
-              error: 'Something went wrong'));
+              error: 'Something went wrong',
+            ),
+          );
         }
       }
     });
