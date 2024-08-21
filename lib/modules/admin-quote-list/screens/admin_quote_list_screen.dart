@@ -53,13 +53,16 @@ class _AdminQuoteListScreenState extends State<AdminQuoteListScreen> {
       required BuildContext bottomSheetContext}) {
     return showModalBottomSheet(
       context: bottomSheetContext,
-      builder: (context) => UpdateBottomSheetWidget(
-        docID: docID,
-        quote: quote,
-        author: author,
-        onClosedTap: () {
-          context.maybePop();
-        },
+      builder: (context) => BlocProvider.value(
+        value: BlocProvider.of<AdminQuoteListBloc>(bottomSheetContext),
+        child: UpdateBottomSheetWidget(
+          docID: docID,
+          quote: quote,
+          author: author,
+          onClosedTap: () {
+            context.maybePop();
+          },
+        ),
       ),
     );
   }

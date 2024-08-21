@@ -72,9 +72,19 @@ class AdminQuoteListBloc
           .doc(event.docID)
           .get();
       final quote = quoteData.data();
-      print('aavelo quote map : $quote');
-      // add(const FetchingAdminQuoteListEvent());
-      // emit(state.copyWith(status: AdminQuoteListStateStatus.loaded));
+      state.listOfAdminQuotes.removeWhere(
+        (element) => element.docID == event.docID,
+      );
+      state.listOfAdminQuotes.add(Quotes(
+          author: event.author,
+          quote: event.quote,
+          adminId: firebaseAuth.currentUser!.uid,
+          docID: event.docID));
+      emit(
+        state.copyWith(
+            status: AdminQuoteListStateStatus.loaded,
+            listOfAdminQuotes: state.listOfAdminQuotes),
+      );
     } catch (e) {
       emit(
         state.copyWith(
