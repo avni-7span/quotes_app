@@ -20,28 +20,9 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) => QuoteDataBloc()
-            ..add(
-              const FetchQuoteDataEvent(),
-            )
-            ..add(
-              const FetchAdminDetailEvent(),
-            ),
-        ),
-        BlocProvider(
-          create: (context) => SignUpBloc(),
-        ),
-        BlocProvider(
-          create: (context) => LoginBloc(),
-        ),
-      ],
-      child: MaterialApp.router(
-        debugShowCheckedModeBanner: false,
-        routerConfig: _router.config(),
-      ),
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      routerConfig: _router.config(),
     );
   }
 }

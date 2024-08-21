@@ -11,30 +11,40 @@ import 'package:quotes_app/modules/quotes/widgets/quote_card.dart';
 import 'package:screenshot/screenshot.dart';
 
 @RoutePage()
-class QuoteScreen extends StatefulWidget {
+class QuoteScreen extends StatefulWidget implements AutoRouteWrapper {
   const QuoteScreen({super.key});
 
   @override
   State<QuoteScreen> createState() => _QuoteScreenState();
+
+  @override
+  Widget wrappedRoute(BuildContext context) {
+    return BlocProvider(
+      create: (context) => QuoteDataBloc()
+        ..add(const FetchQuoteDataEvent())
+        ..add(const FetchAdminDetailEvent()),
+      child: this,
+    );
+  }
 }
 
 class _QuoteScreenState extends State<QuoteScreen> {
   final ScreenshotController _screenshotController = ScreenshotController();
 
-  Future _showBottomSheet() {
+  Future _showBottomSheet(BuildContext context) {
     return showModalBottomSheet(
       context: context,
-      builder: (_context) {
+      // useRootNavigator: true,
+      builder: (_) {
         return BottomSheetWidget(
           screenshotController: _screenshotController,
-          index: _currentIndex,
-          passedContext: _context,
+          onClosedTap: () {
+            context.maybePop();
+          },
         );
       },
     );
   }
-
-  late int _currentIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +55,7 @@ class _QuoteScreenState extends State<QuoteScreen> {
         if (state.status == QuoteStateStatus.error) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Something went wrong'),
+              content: Text('Something went wrong.'),
             ),
           );
           return;
@@ -97,9 +107,9 @@ class _QuoteScreenState extends State<QuoteScreen> {
                       initialPage: 0,
                       enableInfiniteScroll: false,
                       onPageChanged: (index, _) {
-                        setState(() {
-                          _currentIndex = index;
-                        });
+                        context
+                            .read<QuoteDataBloc>()
+                            .add(CurrentIndexChangeEvent(index: index));
                       },
                     ),
                   ),
@@ -120,7 +130,9 @@ class _QuoteScreenState extends State<QuoteScreen> {
                     width: 60,
                     child: MaterialButton(
                       color: Colors.black.withOpacity(0.8),
-                      onPressed: _showBottomSheet,
+                      onPressed: () {
+                        _showBottomSheet(context);
+                      },
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
@@ -151,7 +163,7 @@ class _QuoteScreenState extends State<QuoteScreen> {
                       ),
                     )
                   else
-                    const SizedBox(height: 60, width: 60),
+                    const SizedBox(),
                 ],
               ),
             );

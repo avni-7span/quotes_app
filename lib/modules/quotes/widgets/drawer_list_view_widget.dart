@@ -62,36 +62,31 @@ class DrawerListViewWidget extends StatelessWidget {
           create: (context) => LogoutBloc(),
           child: BlocBuilder<LogoutBloc, LogoutState>(
             builder: (context, state) {
-              return ListTile(
-                leading: const Icon(Icons.logout_outlined),
-                title: const Text(
-                  'Logout',
-                  style: TextStyle(color: Colors.black),
-                ),
-                onTap: () async {
-                  context.read<LogoutBloc>().add(const LogoutEvent());
+              return BlocListener<LogoutBloc, LogoutState>(
+                listener: (context, state) async {
                   if (state.status == LogoutStateStatus.loading) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Please wait,we are logging you out'),
-                      ),
-                    );
-                    return;
-                  }
-                  if (state.status == LogoutStateStatus.success) {
+                    const Center(child: CircularProgressIndicator());
+                  } else if (state.status == LogoutStateStatus.success) {
                     await context.router.replace(const LoginRoute());
-                    return;
-                  }
-                  if (state.status == LogoutStateStatus.failure) {
+                  } else if (state.status == LogoutStateStatus.failure) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content:
                             Text('Something went wrong please try again later'),
                       ),
                     );
-                    return;
                   }
                 },
+                child: ListTile(
+                  leading: const Icon(Icons.logout_outlined),
+                  title: const Text(
+                    'Logout',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  onTap: () async {
+                    context.read<LogoutBloc>().add(const LogoutEvent());
+                  },
+                ),
               );
             },
           ),

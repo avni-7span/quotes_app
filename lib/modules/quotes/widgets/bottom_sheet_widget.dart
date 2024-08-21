@@ -1,19 +1,17 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quotes_app/modules/quotes/bloc/quote_data_bloc.dart';
 import 'package:screenshot/screenshot.dart';
 
 class BottomSheetWidget extends StatelessWidget {
-  const BottomSheetWidget(
-      {super.key,
-      required this.screenshotController,
-      required this.index,
-      required this.passedContext});
+  const BottomSheetWidget({
+    super.key,
+    required this.screenshotController,
+    required this.onClosedTap,
+  });
 
   final ScreenshotController screenshotController;
-  final int index;
-  final BuildContext passedContext;
+  final VoidCallback onClosedTap;
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +27,9 @@ class BottomSheetWidget extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                    onPressed: () => context.read<QuoteDataBloc>().add(
-                          ShareAsTextEvent(index: index),
-                        ),
+                    onPressed: () => context
+                        .read<QuoteDataBloc>()
+                        .add(const ShareAsTextEvent()),
                     icon: const Icon(Icons.share)),
                 const Text('Share as text')
               ],
@@ -43,8 +41,7 @@ class BottomSheetWidget extends StatelessWidget {
                 IconButton(
                     onPressed: () => context.read<QuoteDataBloc>().add(
                           TakeScreenShotAndShareEvent(
-                              screenshotController: screenshotController,
-                              index: index),
+                              screenshotController: screenshotController),
                         ),
                     icon: const Icon(Icons.send)),
                 const Text('Share as image')
@@ -57,9 +54,12 @@ class BottomSheetWidget extends StatelessWidget {
                 IconButton(
                     onPressed: () {
                       context.read<QuoteDataBloc>().add(
-                            CopyQuoteToClipBoardEvent(index: index),
+                            const CopyQuoteToClipBoardEvent(),
                           );
-                      // passedContext.maybePop;
+                      context
+                          .read<QuoteDataBloc>()
+                          .add(const FetchQuoteDataEvent());
+                      onClosedTap();
                     },
                     icon: const Icon(Icons.copy)),
                 const Text('Copy Quote')

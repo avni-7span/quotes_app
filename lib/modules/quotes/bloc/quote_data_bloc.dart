@@ -30,6 +30,7 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
     on<TakeScreenShotAndShareEvent>(takeScreenShotAndShare);
     on<ShareAsTextEvent>(shareAsText);
     on<CopyQuoteToClipBoardEvent>(copyQuoteToClipboard);
+    on<CurrentIndexChangeEvent>(setCurrentIndex);
   }
 
   Future<void> fetchQuoteData(
@@ -81,8 +82,16 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
         pixelRatio: 2.0,
         Material(
           child: ScreenshotWidget(
-            quote: state.listOfQuotes[event.index].quote ?? '',
-            author: state.listOfQuotes[event.index].author ?? '',
+            quote: state
+                    .listOfQuotes[
+                        state.currentIndex ?? state.listOfQuotes.length - 1]
+                    .quote ??
+                '',
+            author: state
+                    .listOfQuotes[
+                        state.currentIndex ?? state.listOfQuotes.length - 1]
+                    .author ??
+                '',
           ),
         ),
       );
@@ -102,7 +111,7 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
       ShareAsTextEvent event, Emitter<QuoteDataState> emit) async {
     try {
       await Share.share(
-        '\"${state.listOfQuotes[event.index].quote}\" - ${state.listOfQuotes[event.index].author}',
+        '\"${state.listOfQuotes[state.currentIndex ?? state.listOfQuotes.length - 1].quote}\" - ${state.listOfQuotes[state.currentIndex ?? state.listOfQuotes.length - 1].author}',
       );
     } catch (e) {
       emit(
@@ -117,16 +126,17 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
       await Clipboard.setData(
         ClipboardData(
           text:
-              '\"${state.listOfQuotes[event.index].quote}\" - ${state.listOfQuotes[event.index].author}',
+              '\"${state.listOfQuotes[state.currentIndex ?? state.listOfQuotes.length - 1].quote}\" - ${state.listOfQuotes[state.currentIndex ?? state.listOfQuotes.length - 1].author}',
         ),
       );
-      if (ClipboardStatus == ClipboardStatus.pasteable) {
-        emit(state.copyWith(status: QuoteStateStatus.copiedSuccessfully));
-      } else {
-        emit(state.copyWith(status: QuoteStateStatus.error));
-      }
+      emit(state.copyWith(status: QuoteStateStatus.copiedSuccessfully));
     } catch (e) {
       state.copyWith(status: QuoteStateStatus.error);
     }
+  }
+
+  void setCurrentIndex(
+      CurrentIndexChangeEvent event, Emitter<QuoteDataState> emit) {
+    emit(state.copyWith(currentIndex: event.index));
   }
 }

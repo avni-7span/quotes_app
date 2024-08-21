@@ -5,11 +5,19 @@ import 'package:quotes_app/core/routes/router/router.gr.dart';
 import 'package:quotes_app/modules/sign-up/bloc/sign_up_bloc.dart';
 
 @RoutePage()
-class SignUpScreen extends StatefulWidget {
+class SignUpScreen extends StatefulWidget implements AutoRouteWrapper {
   const SignUpScreen({super.key});
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
+
+  @override
+  Widget wrappedRoute(BuildContext context) {
+    return BlocProvider(
+      create: (context) => SignUpBloc(),
+      child: this,
+    );
+  }
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {

@@ -10,13 +10,13 @@ enum LoginStateStatus {
 }
 
 class LoginState extends Equatable {
-  const LoginState(
-      {this.status = LoginStateStatus.initial,
-      this.email = const Email.pure(),
-      this.password = const Password.pure(),
-      this.isValid = false,
-      this.error = ''
-      });
+  const LoginState({
+    this.status = LoginStateStatus.initial,
+    this.email = const Email.pure(),
+    this.password = const Password.pure(),
+    this.isValid = false,
+    this.error = '',
+  });
 
   final LoginStateStatus status;
   final Email email;
@@ -25,7 +25,7 @@ class LoginState extends Equatable {
   final String error;
 
   @override
-  List<Object?> get props => [status, password, email, isValid,error];
+  List<Object?> get props => [status, password, email, isValid, error];
 
   LoginState copyWith({
     LoginStateStatus? status,

@@ -1,6 +1,14 @@
 part of 'admin_quote_list_bloc.dart';
 
-enum AdminQuoteListStateStatus { initial, fetching, loaded, failure, loading }
+enum AdminQuoteListStateStatus {
+  initial,
+  fetching,
+  loaded,
+  failure,
+  loading,
+  deleted,
+  updated
+}
 
 class AdminQuoteListState extends Equatable {
   const AdminQuoteListState(

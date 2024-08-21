@@ -20,18 +20,19 @@ class GenerateSetOfRandomIntegerEvent extends QuoteDataEvent {
 }
 
 class TakeScreenShotAndShareEvent extends QuoteDataEvent {
-  const TakeScreenShotAndShareEvent(
-      {required this.screenshotController, required this.index});
+  const TakeScreenShotAndShareEvent({required this.screenshotController});
   final ScreenshotController screenshotController;
-  final int index;
 }
 
 class ShareAsTextEvent extends QuoteDataEvent {
-  const ShareAsTextEvent({required this.index});
-  final int index;
+  const ShareAsTextEvent();
 }
 
 class CopyQuoteToClipBoardEvent extends QuoteDataEvent {
-  const CopyQuoteToClipBoardEvent({required this.index});
-  final int index;
+  const CopyQuoteToClipBoardEvent();
+}
+
+class CurrentIndexChangeEvent extends QuoteDataEvent {
+  const CurrentIndexChangeEvent({required this.index});
+  final int? index;
 }

@@ -7,11 +7,19 @@ import 'package:quotes_app/modules/login/bloc/login_bloc.dart';
 import 'package:quotes_app/modules/quotes/bloc/quote_data_bloc.dart';
 
 @RoutePage()
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends StatefulWidget implements AutoRouteWrapper {
   const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
+
+  @override
+  Widget wrappedRoute(BuildContext context) {
+    return BlocProvider(
+      create: (context) => LoginBloc(),
+      child: this,
+    );
+  }
 }
 
 class _LoginScreenState extends State<LoginScreen> {
@@ -23,8 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
       listener: (context, state) async {
         if (state.status == LoginStateStatus.success) {
           await context.replaceRoute(const QuoteRoute());
-        }
-        if (state.status == LoginStateStatus.failure) {
+        } else if (state.status == LoginStateStatus.failure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.error),

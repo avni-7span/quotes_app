@@ -26,6 +26,7 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
           backgroundColor: ColorPallet.fadeBrown,
         ),
         body: BlocListener<AdminQuoteBloc, AdminQuoteState>(
+          listenWhen: (previous, current) => previous.status != current.status,
           listener: (context, state) async {
             if (state.status == AdminQuoteStateStatus.failure) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -33,9 +34,7 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
                   content: Text('Something went wrong'),
                 ),
               );
-              return;
-            }
-            if (state.status == AdminQuoteStateStatus.success) {
+            } else if (state.status == AdminQuoteStateStatus.success) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('Quote added successfully'),
@@ -44,13 +43,13 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
               await context.router.replace(const QuoteRoute());
             }
           },
-          child: BlocBuilder<AdminQuoteBloc, AdminQuoteState>(
-            builder: (context, state) {
-              return SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Center(
-                    child: Column(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Center(
+                child: BlocBuilder<AdminQuoteBloc, AdminQuoteState>(
+                  builder: (context, state) {
+                    return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text(
@@ -129,11 +128,11 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
                         ),
                         const SizedBox(height: 50)
                       ],
-                    ),
-                  ),
+                    );
+                  },
                 ),
-              );
-            },
+              ),
+            ),
           ),
         ),
       ),

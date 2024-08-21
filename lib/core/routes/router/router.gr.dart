@@ -32,7 +32,7 @@ class AdminQuoteListRoute extends _i7.PageRouteInfo<void> {
   static _i7.PageInfo page = _i7.PageInfo(
     name,
     builder: (data) {
-      return const _i1.AdminQuoteListScreen();
+      return _i7.WrappedRoute(child: const _i1.AdminQuoteListScreen());
     },
   );
 }
@@ -70,7 +70,7 @@ class LoginRoute extends _i7.PageRouteInfo<void> {
   static _i7.PageInfo page = _i7.PageInfo(
     name,
     builder: (data) {
-      return const _i3.LoginScreen();
+      return _i7.WrappedRoute(child: const _i3.LoginScreen());
     },
   );
 }
@@ -89,7 +89,7 @@ class QuoteRoute extends _i7.PageRouteInfo<void> {
   static _i7.PageInfo page = _i7.PageInfo(
     name,
     builder: (data) {
-      return const _i4.QuoteScreen();
+      return _i7.WrappedRoute(child: const _i4.QuoteScreen());
     },
   );
 }
@@ -108,7 +108,7 @@ class SignUpRoute extends _i7.PageRouteInfo<void> {
   static _i7.PageInfo page = _i7.PageInfo(
     name,
     builder: (data) {
-      return const _i5.SignUpScreen();
+      return _i7.WrappedRoute(child: const _i5.SignUpScreen());
     },
   );
 }

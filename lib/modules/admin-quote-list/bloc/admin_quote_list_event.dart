@@ -12,9 +12,14 @@ class FetchingAdminQuoteListEvent extends AdminQuoteListEvent {
 }
 
 class EditQuoteEvent extends AdminQuoteListEvent {
-  const EditQuoteEvent();
+  const EditQuoteEvent(
+      {required this.docID, required this.quote, required this.author});
+  final String docID;
+  final String quote;
+  final String? author;
 }
 
 class DeleteQuoteEvent extends AdminQuoteListEvent {
-  const DeleteQuoteEvent();
+  const DeleteQuoteEvent({required this.docID});
+  final String docID;
 }
