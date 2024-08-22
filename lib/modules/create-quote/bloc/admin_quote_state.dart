@@ -6,12 +6,12 @@ class AdminQuoteState extends Equatable {
   const AdminQuoteState({
     this.status = AdminQuoteStateStatus.initial,
     this.isValid = false,
-    this.quote = const Name.pure(),
+    this.quote = const Field.pure(),
   });
 
   final AdminQuoteStateStatus status;
   final bool isValid;
-  final Name quote;
+  final Field quote;
 
   @override
   List<Object?> get props => [status, isValid, quote];
@@ -19,7 +19,7 @@ class AdminQuoteState extends Equatable {
   AdminQuoteState copyWith({
     AdminQuoteStateStatus? status,
     bool? isValid,
-    Name? quote,
+    Field? quote,
   }) {
     return AdminQuoteState(
       status: status ?? this.status,

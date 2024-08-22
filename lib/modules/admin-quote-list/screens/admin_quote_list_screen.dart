@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quotes_app/core/constants/colors/colors.dart';
 import 'package:quotes_app/core/routes/router/router.gr.dart';
 import 'package:quotes_app/modules/admin-quote-list/bloc/admin_quote_list_bloc.dart';
+import 'package:quotes_app/modules/admin-quote-list/widgets/delete_alert_dialogue.dart';
 import 'package:quotes_app/modules/admin-quote-list/widgets/update_bottom_sheet_widget.dart';
 import 'package:quotes_app/modules/quotes/bloc/quote_data_bloc.dart';
 
@@ -50,11 +51,13 @@ class _AdminQuoteListScreenState extends State<AdminQuoteListScreen> {
       {required String docID,
       required String quote,
       required String author,
-      required BuildContext bottomSheetContext}) {
+      required BuildContext quoteScreenContext}) {
     return showModalBottomSheet(
-      context: bottomSheetContext,
+      context: quoteScreenContext,
+      elevation: 5,
+      isScrollControlled: true,
       builder: (context) => BlocProvider.value(
-        value: BlocProvider.of<AdminQuoteListBloc>(bottomSheetContext),
+        value: BlocProvider.of<AdminQuoteListBloc>(quoteScreenContext),
         child: UpdateBottomSheetWidget(
           docID: docID,
           quote: quote,
@@ -63,6 +66,17 @@ class _AdminQuoteListScreenState extends State<AdminQuoteListScreen> {
             context.maybePop();
           },
         ),
+      ),
+    );
+  }
+
+  void showAlertDialogue(
+      {required BuildContext dialogueContext, required int index}) {
+    showDialog(
+      context: dialogueContext,
+      builder: (_context) => BlocProvider.value(
+        value: BlocProvider.of<AdminQuoteListBloc>(dialogueContext),
+        child: DeleteAlertDialogue(index: index),
       ),
     );
   }
@@ -77,6 +91,9 @@ class _AdminQuoteListScreenState extends State<AdminQuoteListScreen> {
           'My Quotes',
           style: TextStyle(color: Colors.black),
         ),
+        leading: IconButton(
+            onPressed: () => context.replaceRoute(const QuoteRoute()),
+            icon: const Icon(Icons.arrow_back)),
         backgroundColor: ColorPallet.lotusPink,
       ),
       body: BlocListener<AdminQuoteListBloc, AdminQuoteListState>(
@@ -134,15 +151,14 @@ class _AdminQuoteListScreenState extends State<AdminQuoteListScreen> {
                                         author: state.listOfAdminQuotes[index]
                                                 .author ??
                                             '',
-                                        bottomSheetContext: context),
+                                        quoteScreenContext: context),
                                     child: const Text('Edit quote')),
                                 ElevatedButton(
-                                    onPressed: () => context
-                                        .read<AdminQuoteListBloc>()
-                                        .add(DeleteQuoteEvent(
-                                            docID: state
-                                                .listOfAdminQuotes[index]
-                                                .docID!)),
+                                    onPressed: () {
+                                      showAlertDialogue(
+                                          index: index,
+                                          dialogueContext: context);
+                                    },
                                     child: const Text('Delete quote'))
                               ],
                             )
@@ -195,7 +211,7 @@ class _AdminQuoteListScreenState extends State<AdminQuoteListScreen> {
               );
             } else {
               return const Center(
-                child: Text('No Data'),
+                child: CircularProgressIndicator(),
               );
             }
           },

@@ -80,6 +80,7 @@ class AdminQuoteListBloc
           quote: event.quote,
           adminId: firebaseAuth.currentUser!.uid,
           docID: event.docID));
+      emit(state.copyWith(status: AdminQuoteListStateStatus.updated));
       emit(
         state.copyWith(
             status: AdminQuoteListStateStatus.loaded,
@@ -106,6 +107,7 @@ class AdminQuoteListBloc
       state.listOfAdminQuotes.removeWhere(
         (element) => element.docID == event.docID,
       );
+      emit(state.copyWith(status: AdminQuoteListStateStatus.deleted));
       emit(state.copyWith(
           listOfAdminQuotes: state.listOfAdminQuotes,
           status: AdminQuoteListStateStatus.loaded));

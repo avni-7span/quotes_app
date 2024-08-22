@@ -5,7 +5,7 @@ import 'package:formz/formz.dart';
 import 'package:quotes_app/core/authentication-repository/authentication_failure.dart';
 import 'package:quotes_app/core/authentication-repository/authentication_repository.dart';
 import 'package:quotes_app/core/validators/email_validator.dart';
-import 'package:quotes_app/core/validators/password_validator.dart';
+import 'package:quotes_app/core/validators/empty_field_validator.dart';
 
 part 'login_event.dart';
 
@@ -26,7 +26,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<PasswordFieldChangeEvent>(
       (event, emit) {
         emit(state.copyWith(status: LoginStateStatus.passwordChanging));
-        final password = Password.dirty(event.password);
+        final password = Field.dirty(event.password);
         emit(
           state.copyWith(
             password: password,
@@ -37,10 +37,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     );
     on<LoginButtonPressedEvent>(
       (event, emit) async {
-        // emit(state.copyWith(status: LoginStateStatus.loading));
-
         final email = Email.dirty(state.email.value);
-        final password = Password.dirty(state.password.value);
+        final password = Field.dirty(state.password.value);
         emit(
           state.copyWith(
             email: email,

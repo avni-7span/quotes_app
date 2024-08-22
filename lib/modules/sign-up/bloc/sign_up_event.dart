@@ -16,6 +16,11 @@ class PasswordChangeEvent extends SignUpEvent {
   final String password;
 }
 
+class ConfirmPasswordChangeEvent extends SignUpEvent {
+  const ConfirmPasswordChangeEvent(this.confirmPassword);
+  final String confirmPassword;
+}
+
 class AdminCheckEvent extends SignUpEvent {
   const AdminCheckEvent(this.isAdmin);
   final bool isAdmin;

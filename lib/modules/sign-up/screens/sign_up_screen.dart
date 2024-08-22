@@ -2,6 +2,8 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quotes_app/core/routes/router/router.gr.dart';
+import 'package:quotes_app/core/validators/email_validator.dart';
+import 'package:quotes_app/core/validators/password_validator.dart';
 import 'package:quotes_app/modules/sign-up/bloc/sign_up_bloc.dart';
 
 @RoutePage()
@@ -22,7 +24,8 @@ class SignUpScreen extends StatefulWidget implements AutoRouteWrapper {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   bool _isChecked = false;
-  bool isVisible = false;
+  bool isPassVisible = true;
+  bool isConfirmPassVisible = true;
 
   @override
   Widget build(BuildContext context) {
@@ -75,13 +78,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(20)),
                               labelText: 'Enter Email',
-                              errorText: state.password.displayError != null
-                                  ? 'Invalid Email'
-                                  : null),
+                              errorText: state.email.displayError ==
+                                      EmailValidationError.empty
+                                  ? 'Email is required'
+                                  : state.email.displayError ==
+                                          EmailValidationError.invalid
+                                      ? 'Invalid Email'
+                                      : null),
                         ),
                         const SizedBox(height: 20),
                         TextFormField(
-                          obscureText: isVisible,
+                          obscureText: isPassVisible,
                           onChanged: (value) => context
                               .read<SignUpBloc>()
                               .add(PasswordChangeEvent(value)),
@@ -89,16 +96,50 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(20)),
                             labelText: 'Enter Password',
-                            errorText: state.email.displayError != null
-                                ? 'Invalid Password'
-                                : null,
+                            errorMaxLines: 3,
+                            errorText: state.password.displayError ==
+                                    PasswordValidationError.empty
+                                ? 'Password is required'
+                                : state.password.displayError ==
+                                        PasswordValidationError.invalid
+                                    ? 'Password must be at least 8 characters long and contain at least one uppercase, one lowercase letter, one number, and one special character.'
+                                    : null,
                             suffixIcon: IconButton(
                               onPressed: () {
                                 setState(() {
-                                  isVisible = !isVisible;
+                                  isPassVisible = !isPassVisible;
                                 });
                               },
-                              icon: isVisible
+                              icon: isPassVisible
+                                  ? const Icon(Icons.visibility)
+                                  : const Icon(Icons.visibility_off),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        TextFormField(
+                          obscureText: isConfirmPassVisible,
+                          onChanged: (value) => context
+                              .read<SignUpBloc>()
+                              .add(ConfirmPasswordChangeEvent(value)),
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20)),
+                            labelText: 'Confirm Password',
+                            errorText: state.confirmPassword.displayError ==
+                                    PasswordValidationError.empty
+                                ? 'Confirming Password is required'
+                                : state.confirmPassword.displayError ==
+                                        PasswordValidationError.invalid
+                                    ? 'Password do not match'
+                                    : null,
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  isConfirmPassVisible = !isConfirmPassVisible;
+                                });
+                              },
+                              icon: isConfirmPassVisible
                                   ? const Icon(Icons.visibility)
                                   : const Icon(Icons.visibility_off),
                             ),

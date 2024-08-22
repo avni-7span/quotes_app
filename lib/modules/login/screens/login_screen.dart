@@ -1,10 +1,9 @@
-import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quotes_app/core/routes/router/router.gr.dart';
+import 'package:quotes_app/core/validators/email_validator.dart';
 import 'package:quotes_app/modules/login/bloc/login_bloc.dart';
-import 'package:quotes_app/modules/quotes/bloc/quote_data_bloc.dart';
 
 @RoutePage()
 class LoginScreen extends StatefulWidget implements AutoRouteWrapper {
@@ -23,7 +22,7 @@ class LoginScreen extends StatefulWidget implements AutoRouteWrapper {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  bool isVisible = false;
+  bool isVisible = true;
 
   @override
   Widget build(BuildContext context) {
@@ -73,9 +72,13 @@ class _LoginScreenState extends State<LoginScreen> {
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(20)),
                               labelText: 'Enter Email',
-                              errorText: state.email.displayError != null
-                                  ? 'Invalid Email'
-                                  : null),
+                              errorText: state.email.displayError ==
+                                      EmailValidationError.empty
+                                  ? 'Email is required'
+                                  : state.email.displayError ==
+                                          EmailValidationError.invalid
+                                      ? 'Invalid Email'
+                                      : null),
                         ),
                         const SizedBox(height: 20),
                         TextFormField(
@@ -88,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 borderRadius: BorderRadius.circular(20)),
                             labelText: 'Enter Password',
                             errorText: state.password.displayError != null
-                                ? 'Invalid Password'
+                                ? 'Password is required'
                                 : null,
                             suffixIcon: IconButton(
                               onPressed: () {

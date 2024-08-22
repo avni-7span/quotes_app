@@ -2,9 +2,9 @@ import 'package:formz/formz.dart';
 
 enum AuthorNameValidatorError { invalid }
 
-class Name extends FormzInput<String, AuthorNameValidatorError> {
-  const Name.pure() : super.pure('');
-  const Name.dirty([super.value = '']) : super.dirty();
+class Field extends FormzInput<String, AuthorNameValidatorError> {
+  const Field.pure() : super.pure('');
+  const Field.dirty([super.value = '']) : super.dirty();
 
   @override
   AuthorNameValidatorError? validator(String? value) {

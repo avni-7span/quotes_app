@@ -4,11 +4,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quotes_app/core/constants/colors/colors.dart';
 import 'package:quotes_app/core/routes/router/router.gr.dart';
 import 'package:quotes_app/modules/logout/bloc/logout_bloc.dart';
+import 'package:quotes_app/modules/quotes/widgets/logout_alert_dialogue.dart';
 
 class DrawerListViewWidget extends StatelessWidget {
   const DrawerListViewWidget({
     super.key,
   });
+
+  void showDialogue({required BuildContext logoutContext}) {
+    showDialog(
+      context: logoutContext,
+      builder: (context) {
+        return BlocProvider.value(
+          value: BlocProvider.of<LogoutBloc>(logoutContext),
+          child: const LogoutAlertDialogue(),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,9 +78,13 @@ class DrawerListViewWidget extends StatelessWidget {
               return BlocListener<LogoutBloc, LogoutState>(
                 listener: (context, state) async {
                   if (state.status == LogoutStateStatus.loading) {
-                    const Center(child: CircularProgressIndicator());
+                    const Center(
+                      child: CircularProgressIndicator(),
+                    );
                   } else if (state.status == LogoutStateStatus.success) {
-                    await context.router.replace(const LoginRoute());
+                    await context.router.replaceAll(
+                      [const LoginRoute()],
+                    );
                   } else if (state.status == LogoutStateStatus.failure) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -83,8 +100,8 @@ class DrawerListViewWidget extends StatelessWidget {
                     'Logout',
                     style: TextStyle(color: Colors.black),
                   ),
-                  onTap: () async {
-                    context.read<LogoutBloc>().add(const LogoutEvent());
+                  onTap: () {
+                    showDialogue(logoutContext: context);
                   },
                 ),
               );

@@ -13,14 +13,14 @@ class LoginState extends Equatable {
   const LoginState({
     this.status = LoginStateStatus.initial,
     this.email = const Email.pure(),
-    this.password = const Password.pure(),
+    this.password = const Field.pure(),
     this.isValid = false,
     this.error = '',
   });
 
   final LoginStateStatus status;
   final Email email;
-  final Password password;
+  final Field password;
   final bool isValid;
   final String error;
 
@@ -30,7 +30,7 @@ class LoginState extends Equatable {
   LoginState copyWith({
     LoginStateStatus? status,
     Email? email,
-    Password? password,
+    Field? password,
     bool? isValid,
     String? error,
   }) {

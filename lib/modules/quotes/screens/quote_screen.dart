@@ -31,16 +31,19 @@ class QuoteScreen extends StatefulWidget implements AutoRouteWrapper {
 class _QuoteScreenState extends State<QuoteScreen> {
   final ScreenshotController _screenshotController = ScreenshotController();
 
-  Future _showBottomSheet(BuildContext context) {
+  Future _showBottomSheet(BuildContext sheetContext) {
     return showModalBottomSheet(
-      context: context,
+      context: sheetContext,
       // useRootNavigator: true,
-      builder: (_) {
-        return BottomSheetWidget(
-          screenshotController: _screenshotController,
-          onClosedTap: () {
-            context.maybePop();
-          },
+      builder: (context) {
+        return BlocProvider.value(
+          value: BlocProvider.of<QuoteDataBloc>(sheetContext),
+          child: BottomSheetWidget(
+            screenshotController: _screenshotController,
+            onClosedTap: () {
+              context.maybePop();
+            },
+          ),
         );
       },
     );

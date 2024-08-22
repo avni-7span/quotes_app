@@ -36,12 +36,17 @@ class _UpdateBottomSheetWidgetState extends State<UpdateBottomSheetWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 250,
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.only(
+          left: 15,
+          right: 15,
+          top: 15,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 40),
       width: double.infinity,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          const SizedBox(height: 20),
           TextFormField(
             controller: _quoteController,
             decoration: InputDecoration(
@@ -50,6 +55,7 @@ class _UpdateBottomSheetWidgetState extends State<UpdateBottomSheetWidget> {
               ),
             ),
           ),
+          const SizedBox(height: 20),
           TextFormField(
             controller: _authorController,
             decoration: InputDecoration(
@@ -58,6 +64,7 @@ class _UpdateBottomSheetWidgetState extends State<UpdateBottomSheetWidget> {
               ),
             ),
           ),
+          const SizedBox(height: 20),
           ElevatedButton(
               onPressed: () {
                 context.read<AdminQuoteListBloc>().add(

@@ -38,20 +38,20 @@ class _QuoteCardState extends State<QuoteCard> {
                   children: [
                     Image.asset(
                       'assets/quote.png',
-                      height: 90,
+                      height: 70,
                       color: Colors.white,
                     ),
                     const SizedBox(height: 50),
                     Text(
                       state.listOfQuotes[widget.index].quote ?? '',
                       textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 30, color: Colors.white),
+                      style: const TextStyle(fontSize: 20, color: Colors.white),
                     ),
                     const SizedBox(height: 50),
                     Text(
                       '- ${state.listOfQuotes[widget.index].author}',
                       textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 30, color: Colors.white),
+                      style: const TextStyle(fontSize: 20, color: Colors.white),
                     ),
                   ],
                 ),

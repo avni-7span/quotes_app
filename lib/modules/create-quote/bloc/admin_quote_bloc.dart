@@ -5,7 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
-import 'package:quotes_app/core/validators/name_validator.dart';
+import 'package:quotes_app/core/validators/empty_field_validator.dart';
 
 part 'admin_quote_event.dart';
 
@@ -21,7 +21,7 @@ class AdminQuoteBloc extends Bloc<AdminQuoteEvent, AdminQuoteState> {
     on<AddQuoteToFireStoreEvent>(addQuoteToFireStore);
 
     on<QuoteFieldChangeEvent>((event, emit) {
-      final quote = Name.dirty(event.quote);
+      final quote = Field.dirty(event.quote);
       emit(
         state.copyWith(
           quote: quote,
@@ -34,7 +34,7 @@ class AdminQuoteBloc extends Bloc<AdminQuoteEvent, AdminQuoteState> {
   Future<void> addQuoteToFireStore(
       AddQuoteToFireStoreEvent event, Emitter<AdminQuoteState> emit) async {
     try {
-      final quote = Name.dirty(state.quote.value);
+      final quote = Field.dirty(state.quote.value);
       String? author;
       emit(
         state.copyWith(
