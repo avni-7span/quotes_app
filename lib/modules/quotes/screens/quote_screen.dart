@@ -2,7 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quotes_app/core/constants/colors/colors.dart';
+import 'package:quotes_app/core/constants/colors.dart';
 import 'package:quotes_app/core/routes/router/router.gr.dart';
 import 'package:quotes_app/modules/quotes/bloc/quote_data_bloc.dart';
 import 'package:quotes_app/modules/quotes/widgets/bottom_sheet_widget.dart';
@@ -34,14 +34,15 @@ class _QuoteScreenState extends State<QuoteScreen> {
   Future _showBottomSheet(BuildContext sheetContext) {
     return showModalBottomSheet(
       context: sheetContext,
-      // useRootNavigator: true,
+      useRootNavigator: true,
       builder: (context) {
         return BlocProvider.value(
           value: BlocProvider.of<QuoteDataBloc>(sheetContext),
           child: BottomSheetWidget(
             screenshotController: _screenshotController,
             onClosedTap: () {
-              context.maybePop();
+              Navigator.pop(sheetContext);
+              // Navigator.pop(context);
             },
           ),
         );

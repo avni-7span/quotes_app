@@ -1,7 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quotes_app/core/constants/colors/colors.dart';
+import 'package:quotes_app/core/constants/colors.dart';
+import 'package:quotes_app/core/constants/const_strings.dart';
 import 'package:quotes_app/core/routes/router/router.gr.dart';
 import 'package:quotes_app/modules/logout/bloc/logout_bloc.dart';
 import 'package:quotes_app/modules/quotes/widgets/logout_alert_dialogue.dart';
@@ -82,14 +83,11 @@ class DrawerListViewWidget extends StatelessWidget {
                       child: CircularProgressIndicator(),
                     );
                   } else if (state.status == LogoutStateStatus.success) {
-                    await context.router.replaceAll(
-                      [const LoginRoute()],
-                    );
+                    await context.router.replaceAll([const LoginRoute()]);
                   } else if (state.status == LogoutStateStatus.failure) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content:
-                            Text('Something went wrong please try again later'),
+                        content: Text(ConstantStrings.errorText),
                       ),
                     );
                   }

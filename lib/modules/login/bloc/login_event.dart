@@ -19,3 +19,7 @@ class PasswordFieldChangeEvent extends LoginEvent {
 class LoginButtonPressedEvent extends LoginEvent {
   const LoginButtonPressedEvent();
 }
+
+class SendVerificationEmail extends LoginEvent {
+  const SendVerificationEmail();
+}

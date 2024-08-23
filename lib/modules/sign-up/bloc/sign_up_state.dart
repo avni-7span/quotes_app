@@ -1,6 +1,6 @@
 part of 'sign_up_bloc.dart';
 
-enum SignUpStateStatus { initial, loading, success, failure }
+enum SignUpStateStatus { initial, loading, success, failure, emailSent }
 
 class SignUpState extends Equatable {
   const SignUpState({
@@ -22,8 +22,15 @@ class SignUpState extends Equatable {
   final String error;
 
   @override
-  List<Object?> get props =>
-      [status, password, email, isValid, isAdmin, error, confirmPassword];
+  List<Object?> get props => [
+        status,
+        password,
+        email,
+        isValid,
+        isAdmin,
+        error,
+        confirmPassword,
+      ];
 
   SignUpState copyWith({
     SignUpStateStatus? status,

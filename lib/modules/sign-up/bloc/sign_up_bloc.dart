@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:formz/formz.dart';
 import 'package:quotes_app/core/authentication-repository/authentication_failure.dart';
 import 'package:quotes_app/core/authentication-repository/authentication_repository.dart';
@@ -19,7 +20,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     on<PasswordChangeEvent>(_checkPassword);
     on<ConfirmPasswordChangeEvent>(_checkConfirmPassword);
     on<AdminCheckEvent>(checkAdmin);
-    on<SigneUpButtonPressed>(signUp);
+    on<SigneUpButtonPressed>(signUpAndSendVerificationEmail);
   }
 
   void _checkEmail(EmailChangeEvent event, Emitter<SignUpState> emit) {
@@ -60,7 +61,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     );
   }
 
-  Future<void> signUp(
+  Future<void> signUpAndSendVerificationEmail(
       SigneUpButtonPressed event, Emitter<SignUpState> emit) async {
     final email = Email.dirty(state.email.value);
     final password = Password.dirty(state.password.value);
@@ -87,6 +88,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
           'id': user.user?.uid,
           'isAdmin': state.isAdmin
         });
+        await AuthenticationRepository().sendVerificationEmail();
         emit(state.copyWith(status: SignUpStateStatus.success));
       } on FirebaseException catch (e) {
         emit(

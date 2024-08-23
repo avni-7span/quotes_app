@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quotes_app/core/constants/const_strings.dart';
 import 'package:quotes_app/modules/logout/bloc/logout_bloc.dart';
 
 class LogoutAlertDialogue extends StatelessWidget {
@@ -9,17 +10,17 @@ class LogoutAlertDialogue extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      content: const Text('Are you sure you want to logout from account?'),
+      content: const Text(ConstantStrings.logOutAlert),
       actions: [
         TextButton(
           onPressed: context.maybePop,
-          child: const Text('Cancel'),
+          child: const Text('Go Back'),
         ),
         TextButton(
           onPressed: () {
             context.read<LogoutBloc>().add(const LogoutEvent());
           },
-          child: const Text('Yes'),
+          child: const Text('Logout'),
         )
       ],
     );

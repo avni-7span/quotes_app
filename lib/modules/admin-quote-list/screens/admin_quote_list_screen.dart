@@ -1,7 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quotes_app/core/constants/colors/colors.dart';
+import 'package:quotes_app/core/constants/colors.dart';
+import 'package:quotes_app/core/constants/const_strings.dart';
 import 'package:quotes_app/core/routes/router/router.gr.dart';
 import 'package:quotes_app/modules/admin-quote-list/bloc/admin_quote_list_bloc.dart';
 import 'package:quotes_app/modules/admin-quote-list/widgets/delete_alert_dialogue.dart';
@@ -31,8 +32,7 @@ class _AdminQuoteListScreenState extends State<AdminQuoteListScreen> {
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Access Denied'),
-        content: const Text(
-            'You must be an admin to use this feature. Would you like to sign up as an admin?'),
+        content: const Text(ConstantStrings.adminAdmin),
         actions: [
           TextButton(
             onPressed: context.maybePop,

@@ -16,22 +16,11 @@ final currentUser = FirebaseAuth.instance.currentUser;
 
 class AdminQuoteBloc extends Bloc<AdminQuoteEvent, AdminQuoteState> {
   AdminQuoteBloc() : super(const AdminQuoteState()) {
-    on<AdminQuoteEvent>((event, emit) {});
-
-    on<AddQuoteToFireStoreEvent>(addQuoteToFireStore);
-
-    on<QuoteFieldChangeEvent>((event, emit) {
-      final quote = Field.dirty(event.quote);
-      emit(
-        state.copyWith(
-          quote: quote,
-          isValid: Formz.validate([quote]),
-        ),
-      );
-    });
+    on<AddQuoteToFireStoreEvent>(_addQuoteToFireStore);
+    on<QuoteFieldChangeEvent>(_checkQuoteField);
   }
 
-  Future<void> addQuoteToFireStore(
+  Future<void> _addQuoteToFireStore(
       AddQuoteToFireStoreEvent event, Emitter<AdminQuoteState> emit) async {
     try {
       final quote = Field.dirty(state.quote.value);
@@ -61,5 +50,16 @@ class AdminQuoteBloc extends Bloc<AdminQuoteEvent, AdminQuoteState> {
     } catch (e) {
       emit(state.copyWith(status: AdminQuoteStateStatus.failure));
     }
+  }
+
+  void _checkQuoteField(
+      QuoteFieldChangeEvent event, Emitter<AdminQuoteState> emit) {
+    final quote = Field.dirty(event.quote);
+    emit(
+      state.copyWith(
+        quote: quote,
+        isValid: Formz.validate([quote]),
+      ),
+    );
   }
 }

@@ -1,8 +1,9 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quotes_app/core/constants/colors/colors.dart';
+import 'package:quotes_app/core/constants/colors.dart';
 import 'package:quotes_app/core/routes/router/router.gr.dart';
+import 'package:quotes_app/core/widgets/custom_material_button.dart';
 import 'package:quotes_app/modules/create-quote/bloc/admin_quote_bloc.dart';
 import 'package:quotes_app/modules/quotes/bloc/quote_data_bloc.dart';
 
@@ -23,6 +24,7 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
       create: (context) => AdminQuoteBloc(),
       child: Scaffold(
         appBar: AppBar(
+          title: const Text('Create Quote'),
           backgroundColor: ColorPallet.fadeBrown,
         ),
         body: BlocListener<AdminQuoteBloc, AdminQuoteState>(
@@ -52,28 +54,23 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        const SizedBox(height: 50),
                         const Text(
                           'Share your creative quotes with other users.',
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                               color: Colors.black,
-                              fontSize: 15,
+                              fontSize: 20,
                               fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 30),
-                        const Text(
-                          'Quote',
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 10),
                         TextFormField(
                           onChanged: (value) =>
                               context.read<AdminQuoteBloc>().add(
                                     QuoteFieldChangeEvent(value),
                                   ),
                           decoration: InputDecoration(
+                              labelText: 'Quote',
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
@@ -82,49 +79,33 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
                                   : null),
                         ),
                         const SizedBox(height: 30),
-                        const Text(
-                          'Author Name',
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 10),
                         TextFormField(
                           controller: _authorFieldController,
                           decoration: InputDecoration(
+                            labelText: 'Author Name',
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
                             ),
                           ),
                         ),
                         const SizedBox(height: 40),
-                        SizedBox(
-                          height: 40,
-                          child: MaterialButton(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            elevation: 5,
-                            color: Colors.blue,
-                            onPressed: () {
-                              context.read<AdminQuoteBloc>().add(
-                                    AddQuoteToFireStoreEvent(
-                                        author: _authorFieldController.text),
-                                  );
-                              context
-                                  .read<QuoteDataBloc>()
-                                  .add(const FetchQuoteDataEvent());
-                            },
-                            child:
-                                state.status == AdminQuoteStateStatus.addQuote
-                                    ? const CircularProgressIndicator()
-                                    : const Text(
-                                        'Create Quote',
-                                        style: TextStyle(
-                                            color: Colors.white, fontSize: 20),
-                                      ),
-                          ),
+                        CustomMaterialButton(
+                          onPressed: () {
+                            context.read<AdminQuoteBloc>().add(
+                                  AddQuoteToFireStoreEvent(
+                                      author: _authorFieldController.text),
+                                );
+                            context
+                                .read<QuoteDataBloc>()
+                                .add(const FetchQuoteDataEvent());
+                          },
+                          buttonLabelWidget:
+                              state.status == AdminQuoteStateStatus.addQuote
+                                  ? const CircularProgressIndicator()
+                                  : const Text(
+                                      'Create Quote',
+                                      style: TextStyle(fontSize: 20),
+                                    ),
                         ),
                         const SizedBox(height: 50)
                       ],

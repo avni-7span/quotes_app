@@ -1,6 +1,6 @@
 import 'package:formz/formz.dart';
 
-enum PasswordValidationError { invalid, empty }
+enum PasswordValidationError { invalid, passEmpty, confirmPassEmpty }
 
 class Password extends FormzInput<String, PasswordValidationError> {
   const Password.pure([this.confirmPassword]) : super.pure('');
@@ -18,7 +18,7 @@ class Password extends FormzInput<String, PasswordValidationError> {
     if (confirmPassword != null && confirmPassword == value) {
       return null;
     } else if (value == '' || value == null) {
-      return PasswordValidationError.empty;
+      return PasswordValidationError.passEmpty;
     } else if (confirmPassword != null && confirmPassword != value) {
       return PasswordValidationError.invalid;
     } else {

@@ -19,7 +19,8 @@ class _QuoteCardState extends State<QuoteCard> {
       builder: (context, state) {
         if (state.status == QuoteStateStatus.loading) {
           return const Center(child: CircularProgressIndicator());
-        } else if (state.status == QuoteStateStatus.loaded) {
+        } else if (state.status == QuoteStateStatus.loaded ||
+            state.status == QuoteStateStatus.copiedSuccessfully) {
           return Container(
             margin: const EdgeInsets.symmetric(horizontal: 8),
             alignment: Alignment.center,

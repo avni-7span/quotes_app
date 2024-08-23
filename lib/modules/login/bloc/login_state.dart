@@ -6,7 +6,9 @@ enum LoginStateStatus {
   success,
   failure,
   emailChanging,
-  passwordChanging
+  passwordChanging,
+  notVerified,
+  emailSent
 }
 
 class LoginState extends Equatable {
@@ -16,6 +18,7 @@ class LoginState extends Equatable {
     this.password = const Field.pure(),
     this.isValid = false,
     this.error = '',
+    this.isVerified,
   });
 
   final LoginStateStatus status;
@@ -23,9 +26,11 @@ class LoginState extends Equatable {
   final Field password;
   final bool isValid;
   final String error;
+  final bool? isVerified;
 
   @override
-  List<Object?> get props => [status, password, email, isValid, error];
+  List<Object?> get props =>
+      [status, password, email, isValid, error, isVerified];
 
   LoginState copyWith({
     LoginStateStatus? status,
@@ -33,6 +38,7 @@ class LoginState extends Equatable {
     Field? password,
     bool? isValid,
     String? error,
+    bool? isVerified,
   }) {
     return LoginState(
       status: status ?? this.status,
@@ -40,6 +46,7 @@ class LoginState extends Equatable {
       password: password ?? this.password,
       isValid: isValid ?? this.isValid,
       error: error ?? this.error,
+      isVerified: isVerified ?? this.isVerified,
     );
   }
 }

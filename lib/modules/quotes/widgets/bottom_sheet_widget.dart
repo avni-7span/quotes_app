@@ -54,9 +54,9 @@ class BottomSheetWidget extends StatelessWidget {
                     context.read<QuoteDataBloc>().add(
                           const CopyQuoteToClipBoardEvent(),
                         );
-                    context
-                        .read<QuoteDataBloc>()
-                        .add(const FetchQuoteDataEvent());
+                    // context
+                    //     .read<QuoteDataBloc>()
+                    //     .add(const FetchQuoteDataEvent());
                     onClosedTap();
                   },
                   icon: const Icon(Icons.copy)),

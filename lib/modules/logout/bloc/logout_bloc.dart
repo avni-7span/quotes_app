@@ -13,12 +13,13 @@ class LogoutBloc extends Bloc<LogoutEvent, LogoutState> {
   }
 
   Future<void> logout(LogoutEvent event, Emitter<LogoutState> emit) async {
-    try{
+    try {
       emit(state.copyWith(status: LogoutStateStatus.loading));
-      await AuthenticationRepository().logOut();
+      await AuthenticationRepository.instance.logOut();
       emit(state.copyWith(status: LogoutStateStatus.success));
-    }catch(e){
-      emit(state.copyWith(status: LogoutStateStatus.failure,errorMessage: e.toString()));
+    } catch (e) {
+      emit(state.copyWith(
+          status: LogoutStateStatus.failure, errorMessage: e.toString()));
     }
   }
 }

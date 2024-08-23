@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quotes_app/core/routes/router/router.gr.dart';
 import 'package:quotes_app/core/validators/email_validator.dart';
+import 'package:quotes_app/core/widgets/custom_material_button.dart';
+import 'package:quotes_app/core/widgets/email_text_field.dart';
+import 'package:quotes_app/core/widgets/password_text_field.dart';
 import 'package:quotes_app/modules/login/bloc/login_bloc.dart';
+import 'package:quotes_app/modules/login/widgets/verification_alert_widget.dart';
 
 @RoutePage()
 class LoginScreen extends StatefulWidget implements AutoRouteWrapper {
@@ -23,6 +27,22 @@ class LoginScreen extends StatefulWidget implements AutoRouteWrapper {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool isVisible = true;
+  static const TextStyle textStyle = TextStyle(fontSize: 20);
+
+  Future _showAlertDialogue({required BuildContext loginScreenContext}) async {
+    showDialog(
+      context: loginScreenContext,
+      builder: (context) {
+        return BlocProvider.value(
+            value: BlocProvider.of<LoginBloc>(loginScreenContext),
+            child: VerificationAlertWidget(
+              onClosedTap: () {
+                Navigator.pop(loginScreenContext);
+              },
+            ));
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +50,8 @@ class _LoginScreenState extends State<LoginScreen> {
       listener: (context, state) async {
         if (state.status == LoginStateStatus.success) {
           await context.replaceRoute(const QuoteRoute());
+        } else if (state.isVerified == false) {
+          _showAlertDialogue(loginScreenContext: context);
         } else if (state.status == LoginStateStatus.failure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -63,88 +85,52 @@ class _LoginScreenState extends State<LoginScreen> {
                               fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 30),
-                        TextFormField(
-                          keyboardType: TextInputType.emailAddress,
-                          onChanged: (value) => context
-                              .read<LoginBloc>()
-                              .add(EmailFieldChangeEvent(value)),
-                          decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20)),
-                              labelText: 'Enter Email',
-                              errorText: state.email.displayError ==
-                                      EmailValidationError.empty
-                                  ? 'Email is required'
-                                  : state.email.displayError ==
-                                          EmailValidationError.invalid
-                                      ? 'Invalid Email'
-                                      : null),
+                        EmailTextField(
+                          errorText: state.email.displayError ==
+                                  EmailValidationError.empty
+                              ? 'Email is required'
+                              : state.email.displayError ==
+                                      EmailValidationError.invalid
+                                  ? 'Invalid Email'
+                                  : null,
+                          onChangedFunction: (value) =>
+                              context.read<LoginBloc>().add(
+                                    EmailFieldChangeEvent(value),
+                                  ),
                         ),
                         const SizedBox(height: 20),
-                        TextFormField(
-                          obscureText: isVisible,
+                        PasswordTextField(
+                          isVisible: isVisible,
                           onChanged: (value) => context
                               .read<LoginBloc>()
                               .add(PasswordFieldChangeEvent(value)),
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20)),
-                            labelText: 'Enter Password',
-                            errorText: state.password.displayError != null
-                                ? 'Password is required'
-                                : null,
-                            suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  isVisible = !isVisible;
-                                });
-                              },
-                              icon: isVisible
-                                  ? const Icon(Icons.visibility)
-                                  : const Icon(Icons.visibility_off),
-                            ),
-                          ),
+                          errorText: state.password.displayError != null
+                              ? 'Password is required'
+                              : null,
                         ),
                         const SizedBox(height: 20),
-                        SizedBox(
-                          height: 50,
-                          width: double.infinity,
-                          child: MaterialButton(
-                            elevation: 5,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            color: Colors.blue.shade200,
-                            onPressed: () {
-                              context
-                                  .read<LoginBloc>()
-                                  .add(const LoginButtonPressedEvent());
-                            },
-                            child: state.status == LoginStateStatus.loading
-                                ? const CircularProgressIndicator()
-                                : const Text(
-                                    'Login',
-                                    style: TextStyle(fontSize: 20),
-                                  ),
-                          ),
+                        CustomMaterialButton(
+                          onPressed: () {
+                            context
+                                .read<LoginBloc>()
+                                .add(const LoginButtonPressedEvent());
+                          },
+                          buttonLabelWidget:
+                              state.status == LoginStateStatus.loading
+                                  ? const CircularProgressIndicator()
+                                  : const Text(
+                                      'Login',
+                                      style: textStyle,
+                                    ),
                         ),
                         const SizedBox(height: 20),
-                        SizedBox(
-                          height: 50,
-                          width: double.infinity,
-                          child: MaterialButton(
-                            elevation: 5,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            color: Colors.blue.shade200,
-                            onPressed: () async {
-                              await context.replaceRoute(const SignUpRoute());
-                            },
-                            child: const Text(
-                              'Don\'t have an account ? Signup',
-                              style: TextStyle(fontSize: 20),
-                            ),
+                        CustomMaterialButton(
+                          onPressed: () async {
+                            await context.pushRoute(const SignUpRoute());
+                          },
+                          buttonLabelWidget: const Text(
+                            'Don\'t have an account ? Signup',
+                            style: textStyle,
                           ),
                         ),
                       ],

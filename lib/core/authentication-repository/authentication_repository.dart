@@ -3,10 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 class AuthenticationRepository {
   final firebase_auth.FirebaseAuth _firebaseAuth;
 
-  static final AuthenticationRepository _singleton =
+  static final AuthenticationRepository instance =
       AuthenticationRepository._internal();
 
-  factory AuthenticationRepository() => _singleton;
+  factory AuthenticationRepository() => instance;
 
   AuthenticationRepository._internal()
       : _firebaseAuth = firebase_auth.FirebaseAuth.instance;
@@ -30,4 +30,12 @@ class AuthenticationRepository {
   Future<void> logOut() async {
     await _firebaseAuth.signOut();
   }
+
+  Future<void> sendVerificationEmail() async {
+    await _firebaseAuth.currentUser?.sendEmailVerification();
+  }
 }
+
+/// call send verification email event
+/// final  a = _firebaseAuth.currentUser?.emailVerified ; then route to login screen else nothing ;
+///

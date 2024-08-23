@@ -129,7 +129,9 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
               '\"${state.listOfQuotes[state.currentIndex ?? state.listOfQuotes.length - 1].quote}\" - ${state.listOfQuotes[state.currentIndex ?? state.listOfQuotes.length - 1].author}',
         ),
       );
-      emit(state.copyWith(status: QuoteStateStatus.copiedSuccessfully));
+      emit(state.copyWith(
+        status: QuoteStateStatus.copiedSuccessfully,
+      ));
     } catch (e) {
       state.copyWith(status: QuoteStateStatus.error);
     }
