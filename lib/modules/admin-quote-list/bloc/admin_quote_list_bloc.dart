@@ -55,16 +55,12 @@ class AdminQuoteListBloc
       emit(state.copyWith(status: AdminQuoteListStateStatus.loading));
       final reference =
           fireStoreInstance.collection('motivational_quotes').doc(event.docID);
-      final snapshot = await reference.get();
-      print('update pela idlist : ${snapshot.data()?['id']}');
       await reference.update({
         'quote': event.quote,
         'author': event.author == null || event.author == ''
             ? 'unknown'
             : event.author
       });
-      final idList = snapshot.data()?['id'];
-      print('update pachhi idList : $idList');
       state.listOfAdminQuotes.removeWhere(
         (element) => element.docID == event.docID,
       );
@@ -73,7 +69,6 @@ class AdminQuoteListBloc
         quote: event.quote,
         createdBy: firebaseAuth.currentUser!.uid,
         docID: event.docID,
-        id: idList,
       ));
       emit(state.copyWith(status: AdminQuoteListStateStatus.updated));
       emit(

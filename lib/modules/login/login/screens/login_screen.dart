@@ -108,6 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 20),
                         PasswordTextField(
+                          label: 'Enter Password',
                           isVisible: isVisible,
                           onChanged: (value) => context
                               .read<LoginBloc>()

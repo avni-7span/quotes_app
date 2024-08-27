@@ -7,7 +7,7 @@ class SignUpState extends Equatable {
     this.status = SignUpStateStatus.initial,
     this.email = const Email.pure(),
     this.password = const Password.pure(),
-    this.confirmPassword = const Password.pure(),
+    this.confirmPassword = const ConfirmPassword.pure(),
     this.isValid = false,
     this.isAdmin = false,
     this.error = '',
@@ -16,7 +16,7 @@ class SignUpState extends Equatable {
   final SignUpStateStatus status;
   final Email email;
   final Password password;
-  final Password confirmPassword;
+  final ConfirmPassword confirmPassword;
   final bool isValid;
   final bool isAdmin;
   final String error;
@@ -36,7 +36,7 @@ class SignUpState extends Equatable {
     SignUpStateStatus? status,
     Email? email,
     Password? password,
-    Password? confirmPassword,
+    ConfirmPassword? confirmPassword,
     bool? isValid,
     bool? isAdmin,
     String? error,

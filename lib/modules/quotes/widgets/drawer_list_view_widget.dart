@@ -45,10 +45,12 @@ class DrawerListViewWidget extends StatelessWidget {
         ListTile(
           leading: const Icon(Icons.bookmark_outlined),
           title: const Text(
-            'Bookmarks',
+            'Favourite Quotes',
             style: TextStyle(color: Colors.black),
           ),
-          onTap: () {},
+          onTap: () async {
+            await context.router.push(const BookmarkRoute());
+          },
         ),
         ListTile(
           leading: const Icon(Icons.search),

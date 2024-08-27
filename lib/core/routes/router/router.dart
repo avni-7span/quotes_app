@@ -17,5 +17,6 @@ class AppRouter extends RootStackRouter {
         AutoRoute(page: AdminQuoteListRoute.page),
         AutoRoute(page: VerificationWaitingRoute.page),
         AutoRoute(page: ForgotPasswordRoute.page),
+        AutoRoute(page: BookmarkRoute.page),
       ];
 }

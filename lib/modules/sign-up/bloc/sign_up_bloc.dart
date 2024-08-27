@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:formz/formz.dart';
 import 'package:quotes_app/core/authentication-repository/authentication_failure.dart';
 import 'package:quotes_app/core/authentication-repository/authentication_repository.dart';
+import 'package:quotes_app/core/validators/confirm_password_validator.dart';
 import 'package:quotes_app/core/validators/email_validator.dart';
 import 'package:quotes_app/core/validators/password_validator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -46,7 +47,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   void _checkConfirmPassword(
       ConfirmPasswordChangeEvent event, Emitter<SignUpState> emit) {
     final confirmPass =
-        Password.dirty(state.password.value, event.confirmPassword);
+        ConfirmPassword.dirty(state.password.value, event.confirmPassword);
     emit(
       state.copyWith(
         confirmPassword: confirmPass,
@@ -65,8 +66,8 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
       SigneUpButtonPressed event, Emitter<SignUpState> emit) async {
     final email = Email.dirty(state.email.value);
     final password = Password.dirty(state.password.value);
-    final confirmPass =
-        Password.dirty(state.password.value, state.confirmPassword.value);
+    final confirmPass = ConfirmPassword.dirty(
+        state.password.value, state.confirmPassword.value);
     emit(
       state.copyWith(
         email: email,

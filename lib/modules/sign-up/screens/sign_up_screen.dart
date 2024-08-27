@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quotes_app/core/constants/const_strings.dart';
 import 'package:quotes_app/core/routes/router/router.gr.dart';
+import 'package:quotes_app/core/validators/confirm_password_validator.dart';
 import 'package:quotes_app/core/validators/email_validator.dart';
 import 'package:quotes_app/core/validators/password_validator.dart';
 import 'package:quotes_app/core/widgets/custom_material_button.dart';
@@ -89,6 +90,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       const SizedBox(height: 20),
                       PasswordTextField(
+                        label: 'Enter Password',
                         onChanged: (value) => context
                             .read<SignUpBloc>()
                             .add(PasswordChangeEvent(value)),
@@ -103,16 +105,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       const SizedBox(height: 20),
                       PasswordTextField(
+                        label: 'Confirm Password',
                         isVisible: isConfirmPassVisible,
                         onChanged: (value) => context
                             .read<SignUpBloc>()
                             .add(ConfirmPasswordChangeEvent(value)),
                         errorText: state.confirmPassword.displayError ==
-                                PasswordValidationError.confirmPassEmpty
+                                ConfirmPasswordValidationError.passEmpty
                             ? 'Confirming Password is required'
                             : state.confirmPassword.displayError ==
-                                    PasswordValidationError.invalid
-                                ? 'Password do not match'
+                                    ConfirmPasswordValidationError.invalid
+                                ? 'Confirm password do not match with password'
                                 : null,
                       ),
                       const SizedBox(height: 60),

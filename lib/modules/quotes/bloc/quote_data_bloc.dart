@@ -10,7 +10,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:quotes_app/core/model/quote-data-model/quotes_model.dart';
 import 'package:quotes_app/core/model/user-model/user_model.dart';
-import 'package:quotes_app/modules/admin-quote-list/bloc/admin_quote_list_bloc.dart';
 import 'package:quotes_app/modules/quotes/widgets/screenshot_widget.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
@@ -35,6 +34,7 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
     on<AddToFavouriteEvent>(_addToFavourite);
     on<RemoveFromFavouriteEvent>(_removeFromFavourite);
     on<HandleBookMarkEvent>(_handleBookMark);
+    on<FetchBookmarkInfoEvent>(_fetchBookmarkInfo);
   }
 
   Future<void> _fetchQuoteData(
@@ -42,7 +42,7 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
     Emitter<QuoteDataState> emit,
   ) async {
     try {
-      emit(state.copyWith(status: QuoteStateStatus.loading));
+      emit(state.copyWith(status: QuoteStateStatus.fetching));
       final querySnapShot = await db.collection('motivational_quotes').get();
       final listOfDoc = querySnapShot.docs.map((doc) => doc.data()).toList();
       final List<Quotes> listOfQuote = [];
@@ -57,6 +57,7 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
             status: QuoteStateStatus.loaded, listOfQuotes: shuffledList),
       );
     } catch (e) {
+      print('error aave chhe 1: ${e.toString()}');
       emit(state.copyWith(status: QuoteStateStatus.error));
     }
   }
@@ -70,6 +71,7 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
       final user = User.fromFireStore(docSnapShot);
       emit(state.copyWith(status: QuoteStateStatus.adminFetched, user: user));
     } catch (e) {
+      print('error aave chhe 2 : ${e.toString()}');
       emit(state.copyWith(status: QuoteStateStatus.error));
     }
   }
@@ -102,6 +104,7 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
       XFile file = XFile(imgFile.path);
       await Share.shareXFiles([file]);
     } catch (e) {
+      print('error aave chhe 3: ${e.toString()}');
       emit(
         state.copyWith(status: QuoteStateStatus.error),
       );
@@ -115,6 +118,7 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
         '"${state.listOfQuotes[state.currentIndex ?? state.listOfQuotes.length - 1].quote}" - ${state.listOfQuotes[state.currentIndex ?? state.listOfQuotes.length - 1].author}',
       );
     } catch (e) {
+      print('error aave chhe 4 : ${e.toString()}');
       emit(
         state.copyWith(status: QuoteStateStatus.error),
       );
@@ -134,6 +138,7 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
         status: QuoteStateStatus.copiedSuccessfully,
       ));
     } catch (e) {
+      print('error aave chhe 5: ${e.toString()}');
       state.copyWith(status: QuoteStateStatus.error);
     }
   }
@@ -146,17 +151,26 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
   Future<void> _fetchListOfFavouriteQuote(FetchListOfFavouriteQuoteEvent event,
       Emitter<QuoteDataState> emit) async {
     try {
-      final docSnapshot = await db
-          .collection('motivational_quotes')
-          .where('id', arrayContains: currentUserUid)
-          .get();
-      final list = docSnapshot.docs
-          .map(
-            (snapshot) => Quotes.fromFireStore(snapshot.data()),
-          )
-          .toList();
-      emit(state.copyWith(listOfFavouriteQuotes: list));
+      emit(state.copyWith(status: QuoteStateStatus.loading));
+      final userReference = db.collection('users').doc(currentUserUid);
+      final quoteReference = db.collection('motivational_quotes');
+      final docSnapshot = await userReference.get();
+      final listOfDocID = docSnapshot.data()?['favourite_quote_id'];
+      final List<Quotes> quoteList = [];
+      if (listOfDocID != null) {
+        for (String docID in listOfDocID) {
+          final snapshot = await quoteReference.doc(docID).get();
+          quoteList.add(Quotes.fromFireStore(snapshot.data() ?? {}));
+        }
+      }
+      emit(
+        state.copyWith(
+          status: QuoteStateStatus.favouriteListLoaded,
+          listOfFavouriteQuotes: quoteList,
+        ),
+      );
     } catch (e) {
+      print('error aave chhe 6: ${e.toString()}');
       emit(state.copyWith(status: QuoteStateStatus.error));
     }
   }
@@ -164,15 +178,16 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
   Future<void> _addToFavourite(
       AddToFavouriteEvent event, Emitter<QuoteDataState> emit) async {
     try {
-      await db.collection('motivational_quotes').doc(event.docID).update(
+      await db.collection('users').doc(currentUserUid).update(
         {
-          'id': FieldValue.arrayUnion(
-            [currentUserUid],
+          'favourite_quote_id': FieldValue.arrayUnion(
+            [event.docID],
           ),
         },
       );
       add(const FetchListOfFavouriteQuoteEvent());
     } catch (e) {
+      print('error aave chhe 7: ${e.toString()}');
       emit(state.copyWith(status: QuoteStateStatus.error));
     }
   }
@@ -180,15 +195,16 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
   Future<void> _removeFromFavourite(
       RemoveFromFavouriteEvent event, Emitter<QuoteDataState> emit) async {
     try {
-      await db.collection('motivational_quotes').doc(event.docID).update(
+      await db.collection('users').doc(currentUserUid).update(
         {
-          'id': FieldValue.arrayRemove(
-            [currentUserUid],
+          'favourite_quote_id': FieldValue.arrayRemove(
+            [event.docID],
           ),
         },
       );
       add(const FetchListOfFavouriteQuoteEvent());
     } catch (e) {
+      print('error aave chhe 8: ${e.toString()}');
       emit(state.copyWith(status: QuoteStateStatus.error));
     }
   }
@@ -197,12 +213,11 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
       HandleBookMarkEvent event, Emitter<QuoteDataState> emit) async {
     try {
       final docID = event.quote.docID;
-      // final idList = event.quote.id;
-      final snapshot =
-          await db.collection('motivational_quotes').doc(docID).get();
-      final idList = snapshot.data()?['id'];
-      if (idList != null) {
-        if (idList.contains(currentUserUid)) {
+      final reference = db.collection('users').doc(currentUserUid);
+      final snapshot = await reference.get();
+      final docIdList = snapshot.data()?['favourite_quote_id'];
+      if (docIdList != null) {
+        if (docIdList.contains(docID)) {
           add(RemoveFromFavouriteEvent(docID: docID!));
         } else {
           add(AddToFavouriteEvent(docID: docID!));
@@ -211,7 +226,17 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
         add(AddToFavouriteEvent(docID: docID!));
       }
     } catch (e) {
+      print('error aave chhe 9: ${e.toString()}');
       emit(state.copyWith(status: QuoteStateStatus.error));
     }
+  }
+
+  Future<void> _fetchBookmarkInfo(
+      FetchBookmarkInfoEvent event, Emitter<QuoteDataState> emit) async {
+    final userReference = db.collection('users').doc(currentUserUid);
+    final docSnapshot = await userReference.get();
+    final listOfDocID =
+        docSnapshot.data()?['favourite_quote_id'] as List<dynamic>?;
+    emit(state.copyWith(listOfFavQuoteIds: listOfDocID));
   }
 }

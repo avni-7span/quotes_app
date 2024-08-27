@@ -55,3 +55,7 @@ class HandleBookMarkEvent extends QuoteDataEvent {
   const HandleBookMarkEvent({required this.quote});
   final Quotes quote;
 }
+
+class FetchBookmarkInfoEvent extends QuoteDataEvent {
+  const FetchBookmarkInfoEvent();
+}

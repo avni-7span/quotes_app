@@ -22,7 +22,8 @@ class QuoteScreen extends StatefulWidget implements AutoRouteWrapper {
     return BlocProvider(
       create: (context) => QuoteDataBloc()
         ..add(const FetchQuoteDataEvent())
-        ..add(const FetchAdminDetailEvent()),
+        ..add(const FetchAdminDetailEvent())
+        ..add(const FetchBookmarkInfoEvent()),
       child: this,
     );
   }
@@ -30,12 +31,13 @@ class QuoteScreen extends StatefulWidget implements AutoRouteWrapper {
 
 class _QuoteScreenState extends State<QuoteScreen> {
   final ScreenshotController _screenshotController = ScreenshotController();
-  // final bool isFavourite = false;
+  final bool isFavourite = false;
 
   Future _showBottomSheet(BuildContext sheetContext) {
     return showModalBottomSheet(
       context: sheetContext,
       useRootNavigator: true,
+      isScrollControlled: true,
       builder: (context) {
         return BlocProvider.value(
           value: BlocProvider.of<QuoteDataBloc>(sheetContext),

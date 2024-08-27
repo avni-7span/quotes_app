@@ -1,11 +1,10 @@
 import 'package:equatable/equatable.dart';
 
 class Quotes extends Equatable {
-  const Quotes({this.quote, this.author, this.docID, this.id, this.createdBy});
+  const Quotes({this.quote, this.author, this.docID, this.createdBy});
 
   final String? quote;
   final String? author;
-  final List? id;
   final String? docID;
   final String? createdBy;
 
@@ -15,7 +14,6 @@ class Quotes extends Equatable {
     return Quotes(
         quote: data['quote'],
         author: data['author'],
-        id: data['id'],
         docID: data['doc_id'],
         createdBy: data['created_by']);
   }
@@ -24,12 +22,11 @@ class Quotes extends Equatable {
     return {
       'quote': quote.quote,
       'author': quote.author,
-      'id': quote.id,
       'doc_id': quote.docID,
       'created_by': quote.createdBy
     };
   }
 
   @override
-  List<Object?> get props => [quote, author, id, createdBy, docID];
+  List<Object?> get props => [quote, author, createdBy, docID];
 }

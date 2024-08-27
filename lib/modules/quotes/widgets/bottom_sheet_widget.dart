@@ -35,98 +35,102 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
 
   final db = FirebaseFirestore.instance;
 
+  Icon iconData(listOfFavID, docId) {
+    if (listOfFavID == null) {
+      return const Icon(Icons.bookmark_outline);
+    } else {
+      if (listOfFavID.contains(docId)) {
+        return const Icon(Icons.bookmark);
+      } else {
+        return const Icon(Icons.bookmark_outline);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 150,
-      width: double.infinity,
-      child: ListView(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        scrollDirection: Axis.horizontal,
-        children: [
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                  onPressed: () => context
-                      .read<QuoteDataBloc>()
-                      .add(const ShareAsTextEvent()),
-                  icon: const Icon(Icons.share)),
-              const Text(
-                'Share as text',
-                maxLines: 2,
-              )
-            ],
-          ),
-          const SizedBox(width: 20),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                  onPressed: () => context.read<QuoteDataBloc>().add(
-                        TakeScreenShotAndShareEvent(
-                            screenshotController: widget._screenshotController),
-                      ),
-                  icon: const Icon(Icons.send)),
-              const Text(
-                'Share as image',
-                maxLines: 2,
-              )
-            ],
-          ),
-          const SizedBox(width: 20),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                onPressed: () {
-                  context.read<QuoteDataBloc>().add(
-                        const CopyQuoteToClipBoardEvent(),
-                      );
-                  widget._onClosedTap();
-                },
-                icon: const Icon(Icons.copy),
-              ),
-              const Text(
-                'Copy Quote',
-                maxLines: 2,
-              )
-            ],
-          ),
-          const SizedBox(width: 20),
-          BlocBuilder<QuoteDataBloc, QuoteDataState>(
-            builder: (context, state) {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  StreamBuilder(
-                      stream: db.collection('motivational_quotes').snapshots(),
-                      builder: (context, snapshot) {
-                        final data = snapshot.data?.docs;
-                        return IconButton(
-                          onPressed: () {
-                            final quoteToHandle = state.listOfQuotes[
-                                state.currentIndex ??
-                                    state.listOfQuotes.length - 1];
-                            context
-                                .read<QuoteDataBloc>()
-                                .add(HandleBookMarkEvent(quote: quoteToHandle));
-                          },
-                          icon: true
-                              ? const Icon(Icons.bookmark)
-                              : const Icon(Icons.bookmark_outline),
-                        );
-                      }),
-                  const Text(
-                    'Favourite',
-                    maxLines: 2,
-                  )
-                ],
-              );
-            },
-          ),
-        ],
-      ),
+    return GridView(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3, mainAxisSpacing: 8, crossAxisSpacing: 8),
+      shrinkWrap: true,
+      physics: const ScrollPhysics(),
+      children: [
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              onPressed: () =>
+                  context.read<QuoteDataBloc>().add(const ShareAsTextEvent()),
+              icon: const Icon(Icons.share),
+            ),
+            const Text(
+              'Share as text',
+              maxLines: 2,
+            )
+          ],
+        ),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              onPressed: () => context.read<QuoteDataBloc>().add(
+                    TakeScreenShotAndShareEvent(
+                        screenshotController: widget._screenshotController),
+                  ),
+              icon: const Icon(Icons.send),
+            ),
+            const Text(
+              'Share as image',
+              maxLines: 2,
+            )
+          ],
+        ),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              onPressed: () {
+                context.read<QuoteDataBloc>().add(
+                      const CopyQuoteToClipBoardEvent(),
+                    );
+                widget._onClosedTap();
+              },
+              icon: const Icon(Icons.copy),
+            ),
+            const Text(
+              'Copy Quote',
+              maxLines: 2,
+            )
+          ],
+        ),
+        BlocBuilder<QuoteDataBloc, QuoteDataState>(
+          builder: (context, state) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                    onPressed: () {
+                      final quoteToHandle = state.listOfQuotes[
+                          state.currentIndex ?? state.listOfQuotes.length - 1];
+                      context
+                          .read<QuoteDataBloc>()
+                          .add(HandleBookMarkEvent(quote: quoteToHandle));
+                    },
+                    icon: iconData(
+                        state.listOfFavQuoteIds,
+                        state
+                            .listOfQuotes[state.currentIndex ??
+                                state.listOfQuotes.length - 1]
+                            .docID)),
+                const Text(
+                  'Favourite',
+                  maxLines: 2,
+                )
+              ],
+            );
+          },
+        ),
+      ],
     );
   }
 }

@@ -17,7 +17,7 @@ class _QuoteCardState extends State<QuoteCard> {
     final size = MediaQuery.of(context).size;
     return BlocBuilder<QuoteDataBloc, QuoteDataState>(
       builder: (context, state) {
-        if (state.status == QuoteStateStatus.loading) {
+        if (state.status == QuoteStateStatus.fetching) {
           return const Center(child: CircularProgressIndicator());
         } else if (state.status == QuoteStateStatus.loaded ||
             state.status == QuoteStateStatus.copiedSuccessfully) {
@@ -60,12 +60,7 @@ class _QuoteCardState extends State<QuoteCard> {
             ),
           );
         } else {
-          // return const Center(child: Text('Could Not Fetch Data.'));
-          return ElevatedButton(
-              onPressed: () => context
-                  .read<QuoteDataBloc>()
-                  .add(const FetchQuoteDataEvent()),
-              child: const Text('Refresh'));
+          return const Center(child: Text('Could Not Fetch Data.'));
         }
       },
     );
