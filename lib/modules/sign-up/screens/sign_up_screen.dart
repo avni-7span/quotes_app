@@ -65,7 +65,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Image.asset('assets/quote_pic.png', height: 150),
+                          Image.asset('assets/quote_pic.png', height: 100),
                           Text(
                             'Welcome',
                             style: TextStyle(
@@ -158,7 +158,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           await context.replaceRoute(const LoginRoute());
                         },
                         buttonLabelWidget: const Text(
-                          'Already have an account ? Login',
+                          'Login Into Existing Account ',
                           style: textStyle,
                         ),
                       ),

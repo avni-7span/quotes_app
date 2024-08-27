@@ -38,11 +38,18 @@ class AdminQuoteBloc extends Bloc<AdminQuoteEvent, AdminQuoteState> {
         } else {
           author = event.author;
         }
-        await fireStoreInstance.collection('motivational_quotes').add({
+        final ref = await fireStoreInstance
+            .collection('motivational_quotes')
+            .add({
           'quote': state.quote.value,
           'author': author,
-          'id': currentUser?.uid
+          'created_by': currentUser?.uid
         });
+        final id = ref.id;
+        await fireStoreInstance
+            .collection('motivational_quotes')
+            .doc(id)
+            .update({'doc_id': id});
         emit(state.copyWith(status: AdminQuoteStateStatus.success));
       } else {
         emit(state.copyWith(status: AdminQuoteStateStatus.failure));

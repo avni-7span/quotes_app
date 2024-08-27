@@ -12,4 +12,6 @@ class ConstantStrings {
       'Sign up as admin and get access to the feature of sharing your creative quotes with the world.';
   static const passwordErrorText =
       'Password must be at least 8 characters long and contain at least one uppercase, one lowercase letter, one number, and one special character.';
+  static const passwordSend =
+      'We have sent you an email containing link to reset password, to the address you provided.Check your inbox and return to the login page to continue.';
 }

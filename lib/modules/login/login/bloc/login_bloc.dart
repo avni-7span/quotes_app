@@ -68,13 +68,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         /// this is new user made on log in
         /// (if we will not create new instance here it will give old user details which will surely not verified)
         final bool? isVerified = userData?.emailVerified;
-        // await Future.delayed(const Duration(seconds: 2));
         if (isVerified == true) {
           emit(state.copyWith(status: LoginStateStatus.success));
         } else {
-          FirebaseAuth.instance.signOut();
-          emit(state.copyWith(
-              isVerified: false, status: LoginStateStatus.notVerified));
+          // FirebaseAuth.instance.signOut();
+          emit(state.copyWith(status: LoginStateStatus.notVerified));
         }
       } on FirebaseException catch (e) {
         emit(
@@ -93,8 +91,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   Future<void> _sendVerificationEmail(
       SendVerificationEmail event, Emitter<LoginState> emit) async {
     try {
-      // emit(state.copyWith(status: LoginStateStatus.loading));
-      await currentUser?.sendEmailVerification();
+      final userData = FirebaseAuth.instance.currentUser;
+      await userData?.sendEmailVerification();
+      print('user send email :${userData?.email}');
       emit(state.copyWith(status: LoginStateStatus.emailSent));
     } catch (e) {
       emit(state.copyWith(status: LoginStateStatus.failure));

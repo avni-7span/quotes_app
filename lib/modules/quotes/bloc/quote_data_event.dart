@@ -36,3 +36,22 @@ class CurrentIndexChangeEvent extends QuoteDataEvent {
   const CurrentIndexChangeEvent({required this.index});
   final int? index;
 }
+
+class FetchListOfFavouriteQuoteEvent extends QuoteDataEvent {
+  const FetchListOfFavouriteQuoteEvent();
+}
+
+class AddToFavouriteEvent extends QuoteDataEvent {
+  const AddToFavouriteEvent({required this.docID});
+  final String docID;
+}
+
+class RemoveFromFavouriteEvent extends QuoteDataEvent {
+  const RemoveFromFavouriteEvent({required this.docID});
+  final String docID;
+}
+
+class HandleBookMarkEvent extends QuoteDataEvent {
+  const HandleBookMarkEvent({required this.quote});
+  final Quotes quote;
+}

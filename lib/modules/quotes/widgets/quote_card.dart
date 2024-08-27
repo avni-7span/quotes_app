@@ -60,7 +60,12 @@ class _QuoteCardState extends State<QuoteCard> {
             ),
           );
         } else {
-          return const Center(child: Text('Could Not Fetch Data.'));
+          // return const Center(child: Text('Could Not Fetch Data.'));
+          return ElevatedButton(
+              onPressed: () => context
+                  .read<QuoteDataBloc>()
+                  .add(const FetchQuoteDataEvent()),
+              child: const Text('Refresh'));
         }
       },
     );

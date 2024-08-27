@@ -30,6 +30,7 @@ class QuoteScreen extends StatefulWidget implements AutoRouteWrapper {
 
 class _QuoteScreenState extends State<QuoteScreen> {
   final ScreenshotController _screenshotController = ScreenshotController();
+  // final bool isFavourite = false;
 
   Future _showBottomSheet(BuildContext sheetContext) {
     return showModalBottomSheet(
@@ -40,6 +41,7 @@ class _QuoteScreenState extends State<QuoteScreen> {
           value: BlocProvider.of<QuoteDataBloc>(sheetContext),
           child: BottomSheetWidget(
             screenshotController: _screenshotController,
+            // isFavourite: isFavourite,
             onClosedTap: () {
               Navigator.pop(sheetContext);
               // Navigator.pop(context);

@@ -27,25 +27,25 @@ class AdminQuoteListScreen extends StatefulWidget implements AutoRouteWrapper {
 }
 
 class _AdminQuoteListScreenState extends State<AdminQuoteListScreen> {
-  void _showAlertDialogue(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Access Denied'),
-        content: const Text(ConstantStrings.adminAdmin),
-        actions: [
-          TextButton(
-            onPressed: context.maybePop,
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {},
-            child: const Text('Yes'),
-          )
-        ],
-      ),
-    );
-  }
+  // void _showAlertDialogue(BuildContext context) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (_) => AlertDialog(
+  //       title: const Text('Access Denied'),
+  //       content: const Text(ConstantStrings.adminAdmin),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: context.maybePop,
+  //           child: const Text('Cancel'),
+  //         ),
+  //         TextButton(
+  //           onPressed: () {},
+  //           child: const Text('Yes'),
+  //         )
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Future _showBottomSheet(
       {required String docID,
@@ -171,40 +171,40 @@ class _AdminQuoteListScreenState extends State<AdminQuoteListScreen> {
               );
             } else if (state.status == AdminQuoteListStateStatus.loaded &&
                 state.listOfAdminQuotes.isEmpty) {
-              return Center(
+              return const Center(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
+                      Text(
                         'You have not uploaded any quotes yet.',
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 25),
                       ),
-                      const SizedBox(height: 40),
-                      BlocBuilder<QuoteDataBloc, QuoteDataState>(
-                        builder: (context, state) {
-                          return ElevatedButton(
-                            onPressed: () async {
-                              if (state.user.isAdmin!) {
-                                await context
-                                    .pushRoute(const CreateQuoteRoute());
-                              } else {
-                                _showAlertDialogue(context);
-                              }
-                            },
-                            child: const Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.add),
-                                SizedBox(width: 10),
-                                Text('Start adding quote')
-                              ],
-                            ),
-                          );
-                        },
-                      )
+                      // SizedBox(height: 40),
+                      // BlocBuilder<QuoteDataBloc, QuoteDataState>(
+                      //   builder: (context, state) {
+                      //     return ElevatedButton(
+                      //       onPressed: () async {
+                      //         if (state.user.isAdmin!) {
+                      //           await context
+                      //               .pushRoute(const CreateQuoteRoute());
+                      //         } else {
+                      //           _showAlertDialogue(context);
+                      //         }
+                      //       },
+                      //       child: const Row(
+                      //         mainAxisSize: MainAxisSize.min,
+                      //         children: [
+                      //           Icon(Icons.add),
+                      //           SizedBox(width: 10),
+                      //           Text('Start adding quote')
+                      //         ],
+                      //       ),
+                      //     );
+                      //   },
+                      // )
                     ],
                   ),
                 ),

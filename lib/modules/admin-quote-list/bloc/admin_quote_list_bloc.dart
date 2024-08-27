@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quotes_app/core/model/quote-data-model/quotes_data_model.dart';
+import 'package:quotes_app/core/model/quote-data-model/quotes_model.dart';
 
 part 'admin_quote_list_event.dart';
 
@@ -29,18 +29,13 @@ class AdminQuoteListBloc
       emit(state.copyWith(status: AdminQuoteListStateStatus.fetching));
       final querySnapShot = await fireStoreInstance
           .collection('motivational_quotes')
-          .where('id', isEqualTo: firebaseAuth.currentUser?.uid)
+          .where('created_by', isEqualTo: firebaseAuth.currentUser?.uid)
           .get();
-      final listOfQuotes = querySnapShot.docs.map((doc) {
-        final data = doc.data();
-
-        return Quotes(
-          docID: doc.id,
-          author: data['author'],
-          quote: data['quote'],
-          adminId: data['id'],
-        );
-      }).toList();
+      final listOfQuotes = querySnapShot.docs
+          .map(
+            (snapshot) => Quotes.fromFireStore(snapshot.data()),
+          )
+          .toList();
       emit(
         state.copyWith(
             listOfAdminQuotes: listOfQuotes,
@@ -58,28 +53,28 @@ class AdminQuoteListBloc
       EditQuoteEvent event, Emitter<AdminQuoteListState> emit) async {
     try {
       emit(state.copyWith(status: AdminQuoteListStateStatus.loading));
-      await fireStoreInstance
-          .collection('motivational_quotes')
-          .doc(event.docID)
-          .update({
+      final reference =
+          fireStoreInstance.collection('motivational_quotes').doc(event.docID);
+      final snapshot = await reference.get();
+      print('update pela idlist : ${snapshot.data()?['id']}');
+      await reference.update({
         'quote': event.quote,
         'author': event.author == null || event.author == ''
             ? 'unknown'
             : event.author
       });
-      final quoteData = await fireStoreInstance
-          .collection('motivational_quotes')
-          .doc(event.docID)
-          .get();
-      final quote = quoteData.data();
+      final idList = snapshot.data()?['id'];
+      print('update pachhi idList : $idList');
       state.listOfAdminQuotes.removeWhere(
         (element) => element.docID == event.docID,
       );
       state.listOfAdminQuotes.add(Quotes(
-          author: event.author,
-          quote: event.quote,
-          adminId: firebaseAuth.currentUser!.uid,
-          docID: event.docID));
+        author: event.author,
+        quote: event.quote,
+        createdBy: firebaseAuth.currentUser!.uid,
+        docID: event.docID,
+        id: idList,
+      ));
       emit(state.copyWith(status: AdminQuoteListStateStatus.updated));
       emit(
         state.copyWith(
