@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quotes_app/modules/quotes/bloc/quote_data_bloc.dart';
+import 'package:quotes_app/modules/home/bloc/quote_data_bloc.dart';
 
 class QuoteCard extends StatefulWidget {
   const QuoteCard({super.key, required this.index});
@@ -15,7 +15,7 @@ class _QuoteCardState extends State<QuoteCard> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return BlocBuilder<QuoteDataBloc, QuoteDataState>(
+    return BlocBuilder<QuoteBloc, QuoteState>(
       builder: (context, state) {
         if (state.apiStatus == APIStatus.loading) {
           return const Center(child: CircularProgressIndicator());

@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quotes_app/core/constants/colors.dart';
 import 'package:quotes_app/core/routes/router/router.gr.dart';
 import 'package:quotes_app/core/widgets/custom_material_button.dart';
-import 'package:quotes_app/modules/create-quote/bloc/admin_quote_bloc.dart';
-import 'package:quotes_app/modules/quotes/bloc/quote_data_bloc.dart';
+import 'package:quotes_app/modules/create-quote/bloc/create_quote_bloc.dart';
+import 'package:quotes_app/modules/home/bloc/quote_data_bloc.dart';
 
 @RoutePage()
 class CreateQuoteScreen extends StatefulWidget {
@@ -21,35 +21,35 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => AdminQuoteBloc(),
+      create: (context) => CreateQuoteBloc(),
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Create Quote'),
           backgroundColor: ColorPallet.fadeBrown,
         ),
-        body: BlocListener<AdminQuoteBloc, AdminQuoteState>(
+        body: BlocListener<CreateQuoteBloc, CreateQuoteState>(
           listenWhen: (previous, current) => previous.status != current.status,
           listener: (context, state) async {
-            if (state.status == AdminQuoteStateStatus.failure) {
+            if (state.status == CreateQuoteStateStatus.failure) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('Something went wrong'),
                 ),
               );
-            } else if (state.status == AdminQuoteStateStatus.success) {
+            } else if (state.status == CreateQuoteStateStatus.success) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('Quote added successfully'),
                 ),
               );
-              await context.router.replace(const QuoteRoute());
+              await context.router.replace(const HomeRoute());
             }
           },
           child: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Center(
-                child: BlocBuilder<AdminQuoteBloc, AdminQuoteState>(
+                child: BlocBuilder<CreateQuoteBloc, CreateQuoteState>(
                   builder: (context, state) {
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -66,7 +66,7 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
                         const SizedBox(height: 30),
                         TextFormField(
                           onChanged: (value) =>
-                              context.read<AdminQuoteBloc>().add(
+                              context.read<CreateQuoteBloc>().add(
                                     QuoteFieldChangeEvent(value),
                                   ),
                           decoration: InputDecoration(
@@ -91,16 +91,16 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
                         const SizedBox(height: 40),
                         CustomMaterialButton(
                           onPressed: () {
-                            context.read<AdminQuoteBloc>().add(
+                            context.read<CreateQuoteBloc>().add(
                                   AddQuoteToFireStoreEvent(
                                       author: _authorFieldController.text),
                                 );
                             context
-                                .read<QuoteDataBloc>()
+                                .read<QuoteBloc>()
                                 .add(const FetchQuoteDataEvent());
                           },
                           buttonLabelWidget:
-                              state.status == AdminQuoteStateStatus.addQuote
+                              state.status == CreateQuoteStateStatus.addQuote
                                   ? const CircularProgressIndicator()
                                   : const Text(
                                       'Create Quote',

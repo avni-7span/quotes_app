@@ -19,7 +19,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> checkRoute() async {
     await Future.delayed(const Duration(seconds: 3));
-    await context.replaceRoute(const QuoteRoute());
+    await context.replaceRoute(const HomeRoute());
   }
 
   @override

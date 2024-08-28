@@ -4,23 +4,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quotes_app/core/constants/colors.dart';
 import 'package:quotes_app/core/routes/router/router.gr.dart';
-import 'package:quotes_app/modules/quotes/bloc/quote_data_bloc.dart';
-import 'package:quotes_app/modules/quotes/widgets/bottom_sheet_widget.dart';
-import 'package:quotes_app/modules/quotes/widgets/drawer_list_view_widget.dart';
-import 'package:quotes_app/modules/quotes/widgets/quote_card.dart';
+import 'package:quotes_app/modules/home/bloc/quote_data_bloc.dart';
+import 'package:quotes_app/modules/home/widgets/bottom_sheet_widget.dart';
+import 'package:quotes_app/modules/home/widgets/drawer_list_view_widget.dart';
+import 'package:quotes_app/modules/home/widgets/quote_card.dart';
 import 'package:screenshot/screenshot.dart';
 
 @RoutePage()
-class QuoteScreen extends StatefulWidget implements AutoRouteWrapper {
-  const QuoteScreen({super.key});
+class HomeScreen extends StatefulWidget implements AutoRouteWrapper {
+  const HomeScreen({super.key});
 
   @override
-  State<QuoteScreen> createState() => _QuoteScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 
   @override
   Widget wrappedRoute(BuildContext context) {
     return BlocProvider(
-      create: (context) => QuoteDataBloc()
+      create: (context) => QuoteBloc()
         ..add(const FetchQuoteDataEvent())
         ..add(const FetchAdminDetailEvent()),
       child: this,
@@ -28,7 +28,7 @@ class QuoteScreen extends StatefulWidget implements AutoRouteWrapper {
   }
 }
 
-class _QuoteScreenState extends State<QuoteScreen> {
+class _HomeScreenState extends State<HomeScreen> {
   final ScreenshotController _screenshotController = ScreenshotController();
   final bool isFavourite = false;
 
@@ -39,7 +39,7 @@ class _QuoteScreenState extends State<QuoteScreen> {
       isScrollControlled: true,
       builder: (context) {
         return BlocProvider.value(
-          value: BlocProvider.of<QuoteDataBloc>(sheetContext),
+          value: BlocProvider.of<QuoteBloc>(sheetContext),
           child: BottomSheetWidget(
             screenshotController: _screenshotController,
             // isFavourite: isFavourite,
@@ -56,7 +56,7 @@ class _QuoteScreenState extends State<QuoteScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return BlocListener<QuoteDataBloc, QuoteDataState>(
+    return BlocListener<QuoteBloc, QuoteState>(
       listenWhen: (previous, current) =>
           previous.status != current.status ||
           previous.apiStatus != current.apiStatus,
@@ -72,7 +72,10 @@ class _QuoteScreenState extends State<QuoteScreen> {
         if (state.status == QuoteStateStatus.copiedSuccessfully) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Quote copied to clipboard.'),
+              behavior: SnackBarBehavior.floating,
+              content: Text(
+                'Quote copied to clipboard.',
+              ),
             ),
           );
           return;
@@ -99,7 +102,7 @@ class _QuoteScreenState extends State<QuoteScreen> {
                       fit: BoxFit.cover),
                 ),
                 child: null),
-            BlocBuilder<QuoteDataBloc, QuoteDataState>(
+            BlocBuilder<QuoteBloc, QuoteState>(
               builder: (context, state) {
                 return Align(
                   alignment: Alignment.center,
@@ -117,7 +120,7 @@ class _QuoteScreenState extends State<QuoteScreen> {
                       enableInfiniteScroll: false,
                       onPageChanged: (index, _) {
                         context
-                            .read<QuoteDataBloc>()
+                            .read<QuoteBloc>()
                             .add(CurrentIndexChangeEvent(index: index));
                       },
                     ),
@@ -127,7 +130,7 @@ class _QuoteScreenState extends State<QuoteScreen> {
             )
           ],
         ),
-        floatingActionButton: BlocBuilder<QuoteDataBloc, QuoteDataState>(
+        floatingActionButton: BlocBuilder<QuoteBloc, QuoteState>(
           builder: (context, state) {
             return Padding(
               padding: const EdgeInsets.only(left: 30),

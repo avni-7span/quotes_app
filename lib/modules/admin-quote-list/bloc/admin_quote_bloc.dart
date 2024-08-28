@@ -6,16 +6,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quotes_app/core/model/quote-data-model/quotes_model.dart';
 
-part 'admin_quote_list_event.dart';
+part 'admin_quote_event.dart';
 
-part 'admin_quote_list_state.dart';
+part 'admin_quote_state.dart';
 
 final fireStoreInstance = FirebaseFirestore.instance;
 final firebaseAuth = FirebaseAuth.instance;
 
-class AdminQuoteListBloc
-    extends Bloc<AdminQuoteListEvent, AdminQuoteListState> {
-  AdminQuoteListBloc() : super(const AdminQuoteListState()) {
+class AdminBloc extends Bloc<AdminQuoteEvent, AdminQuoteState> {
+  AdminBloc() : super(const AdminQuoteState()) {
     on<FetchAdminQuoteListEvent>(_fetchAdminQuoteList);
     on<EditQuoteEvent>(_editQuote);
     on<DeleteQuoteEvent>(_deleteQuote);
@@ -23,10 +22,10 @@ class AdminQuoteListBloc
 
   Future<void> _fetchAdminQuoteList(
     FetchAdminQuoteListEvent event,
-    Emitter<AdminQuoteListState> emit,
+    Emitter<AdminQuoteState> emit,
   ) async {
     try {
-      emit(state.copyWith(status: AdminQuoteListStateStatus.loading));
+      emit(state.copyWith(status: AdminQuoteStateStatus.loading));
 
       /// get the quote list which is created by the current user
       final quoteListSnapShot = await fireStoreInstance
@@ -45,13 +44,13 @@ class AdminQuoteListBloc
       emit(
         state.copyWith(
           adminQuoteList: quoteList,
-          status: AdminQuoteListStateStatus.loaded,
+          status: AdminQuoteStateStatus.loaded,
         ),
       );
     } catch (e) {
       emit(
         state.copyWith(
-          status: AdminQuoteListStateStatus.failure,
+          status: AdminQuoteStateStatus.failure,
           error: e.toString(),
         ),
       );
@@ -66,10 +65,10 @@ class AdminQuoteListBloc
   // TODO
   Future<void> _editQuote(
     EditQuoteEvent event,
-    Emitter<AdminQuoteListState> emit,
+    Emitter<AdminQuoteState> emit,
   ) async {
     try {
-      emit(state.copyWith(status: AdminQuoteListStateStatus.loading));
+      emit(state.copyWith(status: AdminQuoteStateStatus.loading));
 
       final quoteDocument =
           fireStoreInstance.collection('motivational_quotes').doc(event.docID);
@@ -98,14 +97,14 @@ class AdminQuoteListBloc
       add(const FetchAdminQuoteListEvent());
       emit(
         state.copyWith(
-          status: AdminQuoteListStateStatus.edited,
+          status: AdminQuoteStateStatus.edited,
           adminQuoteList: adminQuoteList,
         ),
       );
     } catch (e) {
       emit(
         state.copyWith(
-          status: AdminQuoteListStateStatus.failure,
+          status: AdminQuoteStateStatus.failure,
           error: e.toString(),
         ),
       );
@@ -114,10 +113,10 @@ class AdminQuoteListBloc
 
   Future<void> _deleteQuote(
     DeleteQuoteEvent event,
-    Emitter<AdminQuoteListState> emit,
+    Emitter<AdminQuoteState> emit,
   ) async {
     try {
-      emit(state.copyWith(status: AdminQuoteListStateStatus.loading));
+      emit(state.copyWith(status: AdminQuoteStateStatus.loading));
 
       await fireStoreInstance
           .collection('motivational_quotes')
@@ -133,14 +132,14 @@ class AdminQuoteListBloc
       add(const FetchAdminQuoteListEvent());
       emit(
         state.copyWith(
-          status: AdminQuoteListStateStatus.deleted,
+          status: AdminQuoteStateStatus.deleted,
           adminQuoteList: adminQuoteList,
         ),
       );
     } catch (e) {
       emit(
         state.copyWith(
-          status: AdminQuoteListStateStatus.failure,
+          status: AdminQuoteStateStatus.failure,
           error: e.toString(),
         ),
       );

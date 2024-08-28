@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quotes_app/core/constants/colors.dart';
 import 'package:quotes_app/core/routes/router/router.gr.dart';
-import 'package:quotes_app/modules/quotes/bloc/quote_data_bloc.dart';
+import 'package:quotes_app/modules/home/bloc/quote_data_bloc.dart';
 
 @RoutePage()
 class BookmarkScreen extends StatefulWidget implements AutoRouteWrapper {
@@ -16,7 +16,7 @@ class BookmarkScreen extends StatefulWidget implements AutoRouteWrapper {
   Widget wrappedRoute(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-          QuoteDataBloc()..add(const FetchListOfFavouriteQuoteEvent()),
+          QuoteBloc()..add(const FetchListOfFavouriteQuoteEvent()),
       child: this,
     );
   }
@@ -25,7 +25,7 @@ class BookmarkScreen extends StatefulWidget implements AutoRouteWrapper {
 class _BookmarkScreenState extends State<BookmarkScreen> {
   @override
   Widget build(BuildContext context) {
-    return BlocListener<QuoteDataBloc, QuoteDataState>(
+    return BlocListener<QuoteBloc, QuoteState>(
       listener: (context, state) {
         if (state.apiStatus == APIStatus.error) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -43,11 +43,11 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
             style: TextStyle(color: Colors.black),
           ),
           leading: IconButton(
-              onPressed: () => context.replaceRoute(const QuoteRoute()),
+              onPressed: () => context.replaceRoute(const HomeRoute()),
               icon: const Icon(Icons.arrow_back)),
           backgroundColor: ColorPallet.lotusPink,
         ),
-        body: BlocBuilder<QuoteDataBloc, QuoteDataState>(
+        body: BlocBuilder<QuoteBloc, QuoteState>(
           builder: (context, state) {
             if (state.status == QuoteStateStatus.loading) {
               return const Center(child: CircularProgressIndicator());
@@ -93,7 +93,7 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
                               onPressed: () {
                                 final docID =
                                     state.favouriteQuoteList[index].docID;
-                                context.read<QuoteDataBloc>().add(
+                                context.read<QuoteBloc>().add(
                                       RemoveFromFavouriteEvent(docID: docID),
                                     );
                               },

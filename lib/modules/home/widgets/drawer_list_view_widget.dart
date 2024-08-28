@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quotes_app/core/constants/colors.dart';
 import 'package:quotes_app/core/constants/const_strings.dart';
 import 'package:quotes_app/core/routes/router/router.gr.dart';
+import 'package:quotes_app/modules/home/widgets/logout_alert_dialogue.dart';
 import 'package:quotes_app/modules/logout/bloc/logout_bloc.dart';
-import 'package:quotes_app/modules/quotes/widgets/logout_alert_dialogue.dart';
 
 class DrawerListViewWidget extends StatelessWidget {
   const DrawerListViewWidget({

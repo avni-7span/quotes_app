@@ -1,56 +1,56 @@
 part of 'quote_data_bloc.dart';
 
-class QuoteDataEvent extends Equatable {
-  const QuoteDataEvent();
+class QuoteEvent extends Equatable {
+  const QuoteEvent();
   @override
   List<Object?> get props => [];
 }
 
-class FetchQuoteDataEvent extends QuoteDataEvent {
+class FetchQuoteDataEvent extends QuoteEvent {
   const FetchQuoteDataEvent();
 }
 
-class FetchAdminDetailEvent extends QuoteDataEvent {
+class FetchAdminDetailEvent extends QuoteEvent {
   const FetchAdminDetailEvent();
 }
 
-class GenerateSetOfRandomIntegerEvent extends QuoteDataEvent {
+class GenerateSetOfRandomIntegerEvent extends QuoteEvent {
   const GenerateSetOfRandomIntegerEvent();
 }
 
-class TakeScreenShotAndShareEvent extends QuoteDataEvent {
+class TakeScreenShotAndShareEvent extends QuoteEvent {
   const TakeScreenShotAndShareEvent({required this.screenshotController});
   final ScreenshotController screenshotController;
 }
 
-class ShareAsTextEvent extends QuoteDataEvent {
+class ShareAsTextEvent extends QuoteEvent {
   const ShareAsTextEvent();
 }
 
-class CopyQuoteToClipBoardEvent extends QuoteDataEvent {
+class CopyQuoteToClipBoardEvent extends QuoteEvent {
   const CopyQuoteToClipBoardEvent();
 }
 
-class CurrentIndexChangeEvent extends QuoteDataEvent {
+class CurrentIndexChangeEvent extends QuoteEvent {
   const CurrentIndexChangeEvent({required this.index});
   final int? index;
 }
 
-class FetchListOfFavouriteQuoteEvent extends QuoteDataEvent {
+class FetchListOfFavouriteQuoteEvent extends QuoteEvent {
   const FetchListOfFavouriteQuoteEvent();
 }
 
-class AddToFavouriteEvent extends QuoteDataEvent {
+class AddToFavouriteEvent extends QuoteEvent {
   const AddToFavouriteEvent({required this.docID});
   final String docID;
 }
 
-class RemoveFromFavouriteEvent extends QuoteDataEvent {
+class RemoveFromFavouriteEvent extends QuoteEvent {
   const RemoveFromFavouriteEvent({required this.docID});
   final String docID;
 }
 
-class HandleBookMarkEvent extends QuoteDataEvent {
+class HandleBookMarkEvent extends QuoteEvent {
   const HandleBookMarkEvent({required this.quote});
   final QuoteModel quote;
 }

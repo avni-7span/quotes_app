@@ -13,12 +13,12 @@ import 'package:quotes_app/modules/admin-quote-list/screens/admin_quote_list_scr
     as _i1;
 import 'package:quotes_app/modules/create-quote/screens/create_quote_screen.dart'
     as _i3;
+import 'package:quotes_app/modules/home/screens/bookmark_screen.dart' as _i2;
+import 'package:quotes_app/modules/home/screens/home_screen.dart' as _i5;
 import 'package:quotes_app/modules/login/forgot-password/screens/forgot_password_screen.dart'
     as _i4;
 import 'package:quotes_app/modules/login/login/screens/login_screen.dart'
-    as _i5;
-import 'package:quotes_app/modules/quotes/screens/bookmark_screen.dart' as _i2;
-import 'package:quotes_app/modules/quotes/screens/quote_screen.dart' as _i6;
+    as _i6;
 import 'package:quotes_app/modules/sign-up/screens/sign_up_screen.dart' as _i7;
 import 'package:quotes_app/modules/sign-up/screens/verification_guidance_screen.dart'
     as _i9;
@@ -101,7 +101,26 @@ class ForgotPasswordRoute extends _i10.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i5.LoginScreen]
+/// [_i5.HomeScreen]
+class HomeRoute extends _i10.PageRouteInfo<void> {
+  const HomeRoute({List<_i10.PageRouteInfo>? children})
+      : super(
+          HomeRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'HomeRoute';
+
+  static _i10.PageInfo page = _i10.PageInfo(
+    name,
+    builder: (data) {
+      return _i10.WrappedRoute(child: const _i5.HomeScreen());
+    },
+  );
+}
+
+/// generated route for
+/// [_i6.LoginScreen]
 class LoginRoute extends _i10.PageRouteInfo<void> {
   const LoginRoute({List<_i10.PageRouteInfo>? children})
       : super(
@@ -114,26 +133,7 @@ class LoginRoute extends _i10.PageRouteInfo<void> {
   static _i10.PageInfo page = _i10.PageInfo(
     name,
     builder: (data) {
-      return _i10.WrappedRoute(child: const _i5.LoginScreen());
-    },
-  );
-}
-
-/// generated route for
-/// [_i6.QuoteScreen]
-class QuoteRoute extends _i10.PageRouteInfo<void> {
-  const QuoteRoute({List<_i10.PageRouteInfo>? children})
-      : super(
-          QuoteRoute.name,
-          initialChildren: children,
-        );
-
-  static const String name = 'QuoteRoute';
-
-  static _i10.PageInfo page = _i10.PageInfo(
-    name,
-    builder: (data) {
-      return _i10.WrappedRoute(child: const _i6.QuoteScreen());
+      return _i10.WrappedRoute(child: const _i6.LoginScreen());
     },
   );
 }

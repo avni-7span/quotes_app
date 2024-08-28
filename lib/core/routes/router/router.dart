@@ -12,7 +12,7 @@ class AppRouter extends RootStackRouter {
         AutoRoute(page: SplashRoute.page, path: '/', initial: true),
         AutoRoute(page: SignUpRoute.page),
         AutoRoute(page: LoginRoute.page),
-        AutoRoute(page: QuoteRoute.page, guards: [AuthGuard()]),
+        AutoRoute(page: HomeRoute.page, guards: [AuthGuard()]),
         AutoRoute(page: CreateQuoteRoute.page),
         AutoRoute(page: AdminQuoteListRoute.page),
         AutoRoute(page: VerificationWaitingRoute.page),

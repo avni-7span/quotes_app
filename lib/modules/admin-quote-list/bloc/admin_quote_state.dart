@@ -1,6 +1,6 @@
-part of 'admin_quote_list_bloc.dart';
+part of 'admin_quote_bloc.dart';
 
-enum AdminQuoteListStateStatus {
+enum AdminQuoteStateStatus {
   initial,
   loaded,
   failure,
@@ -9,26 +9,26 @@ enum AdminQuoteListStateStatus {
   edited
 }
 
-class AdminQuoteListState extends Equatable {
-  const AdminQuoteListState({
+class AdminQuoteState extends Equatable {
+  const AdminQuoteState({
     this.error = '',
-    this.status = AdminQuoteListStateStatus.initial,
+    this.status = AdminQuoteStateStatus.initial,
     this.adminQuoteList = const [],
   });
 
   final String? error;
-  final AdminQuoteListStateStatus status;
+  final AdminQuoteStateStatus status;
   final List<QuoteModel> adminQuoteList;
 
   @override
   List<Object?> get props => [status, error, adminQuoteList];
 
-  AdminQuoteListState copyWith({
+  AdminQuoteState copyWith({
     String? error,
-    AdminQuoteListStateStatus? status,
+    AdminQuoteStateStatus? status,
     List<QuoteModel>? adminQuoteList,
   }) {
-    return AdminQuoteListState(
+    return AdminQuoteState(
       error: error ?? this.error,
       status: status ?? this.status,
       adminQuoteList: adminQuoteList ?? this.adminQuoteList,

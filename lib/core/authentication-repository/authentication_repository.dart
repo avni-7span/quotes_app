@@ -35,7 +35,3 @@ class AuthenticationRepository {
     await _firebaseAuth.currentUser?.sendEmailVerification();
   }
 }
-
-/// call send verification email event
-/// final  a = _firebaseAuth.currentUser?.emailVerified ; then route to login screen else nothing ;
-///

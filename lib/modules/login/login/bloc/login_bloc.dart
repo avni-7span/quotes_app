@@ -67,7 +67,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       try {
         emit(state.copyWith(status: LoginStateStatus.loading));
 
-        final user = await AuthenticationRepository().loginWithEmailPassword(
+        await AuthenticationRepository().loginWithEmailPassword(
             email: state.email.value, password: state.password.value);
 
         final userData = FirebaseAuth.instance.currentUser;

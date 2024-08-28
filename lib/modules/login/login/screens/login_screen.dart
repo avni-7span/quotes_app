@@ -49,7 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocListener<LoginBloc, LoginState>(
       listener: (context, state) async {
         if (state.status == LoginStateStatus.success) {
-          await context.replaceRoute(const QuoteRoute());
+          await context.replaceRoute(const HomeRoute());
         } else if (state.status == LoginStateStatus.notVerified) {
           showUserVerificationAlertDialogue();
         } else if (state.status == LoginStateStatus.emailSent) {

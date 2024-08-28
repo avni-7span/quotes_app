@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quotes_app/modules/quotes/bloc/quote_data_bloc.dart';
+import 'package:quotes_app/modules/home/bloc/quote_data_bloc.dart';
 import 'package:screenshot/screenshot.dart';
 
 class BottomSheetWidget extends StatefulWidget {
@@ -27,15 +27,14 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
   @override
   void initState() {
     super.initState();
-    checkIsFavourite(context.read<QuoteDataBloc>().state.currentIndex ??
-        context.read<QuoteDataBloc>().state.quoteList.length - 1);
+    checkIsFavourite(context.read<QuoteBloc>().state.currentIndex ??
+        context.read<QuoteBloc>().state.quoteList.length - 1);
   }
 
   final db = FirebaseFirestore.instance;
 
   Future<void> checkIsFavourite(int currentIndex) async {
-    final docId =
-        context.read<QuoteDataBloc>().state.quoteList[currentIndex].docID;
+    final docId = context.read<QuoteBloc>().state.quoteList[currentIndex].docID;
     final userDocSnapshot =
         await db.collection('users').doc(currentUser?.uid).get();
     final idList = userDocSnapshot.data()?['favourite_quote_id'];
@@ -69,7 +68,7 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
           children: [
             IconButton(
               onPressed: () =>
-                  context.read<QuoteDataBloc>().add(const ShareAsTextEvent()),
+                  context.read<QuoteBloc>().add(const ShareAsTextEvent()),
               icon: const Icon(Icons.share),
             ),
             const Text(
@@ -82,7 +81,7 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              onPressed: () => context.read<QuoteDataBloc>().add(
+              onPressed: () => context.read<QuoteBloc>().add(
                     TakeScreenShotAndShareEvent(
                         screenshotController: widget._screenshotController),
                   ),
@@ -99,7 +98,7 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
           children: [
             IconButton(
               onPressed: () {
-                context.read<QuoteDataBloc>().add(
+                context.read<QuoteBloc>().add(
                       const CopyQuoteToClipBoardEvent(),
                     );
                 widget._onClosedTap();
@@ -112,7 +111,7 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
             )
           ],
         ),
-        BlocBuilder<QuoteDataBloc, QuoteDataState>(
+        BlocBuilder<QuoteBloc, QuoteState>(
           builder: (context, state) {
             return Column(
               mainAxisSize: MainAxisSize.min,
@@ -122,7 +121,7 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
                       final quoteToHandle = state.quoteList[
                           state.currentIndex ?? state.quoteList.length - 1];
                       context
-                          .read<QuoteDataBloc>()
+                          .read<QuoteBloc>()
                           .add(HandleBookMarkEvent(quote: quoteToHandle));
                       setState(() {
                         isFavourite = !isFavourite;

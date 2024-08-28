@@ -10,7 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:quotes_app/core/model/quote-data-model/quotes_model.dart';
 import 'package:quotes_app/core/model/user-model/user_model.dart';
-import 'package:quotes_app/modules/quotes/widgets/screenshot_widget.dart';
+import 'package:quotes_app/modules/home/widgets/screenshot_widget.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -21,8 +21,8 @@ part 'quote_data_state.dart';
 final db = FirebaseFirestore.instance;
 final firebaseAuthInstance = firebase_auth.FirebaseAuth.instance;
 
-class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
-  QuoteDataBloc() : super(const QuoteDataState()) {
+class QuoteBloc extends Bloc<QuoteEvent, QuoteState> {
+  QuoteBloc() : super(const QuoteState()) {
     on<FetchQuoteDataEvent>(_fetchQuoteData);
     on<FetchAdminDetailEvent>(_fetchAdminDetails);
     on<TakeScreenShotAndShareEvent>(_takeScreenShotAndShare);
@@ -37,7 +37,7 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
 
   Future<void> _fetchQuoteData(
     FetchQuoteDataEvent event,
-    Emitter<QuoteDataState> emit,
+    Emitter<QuoteState> emit,
   ) async {
     try {
       emit(state.copyWith(apiStatus: APIStatus.loading));
@@ -65,7 +65,7 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
 
   Future<void> _fetchAdminDetails(
     FetchAdminDetailEvent event,
-    Emitter<QuoteDataState> emit,
+    Emitter<QuoteState> emit,
   ) async {
     try {
       emit(state.copyWith(apiStatus: APIStatus.loading));
@@ -81,7 +81,7 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
 
   Future<void> _takeScreenShotAndShare(
     TakeScreenShotAndShareEvent event,
-    Emitter<QuoteDataState> emit,
+    Emitter<QuoteState> emit,
   ) async {
     try {
       final image = await event.screenshotController.captureFromWidget(
@@ -112,7 +112,7 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
 
   Future<void> _shareAsText(
     ShareAsTextEvent event,
-    Emitter<QuoteDataState> emit,
+    Emitter<QuoteState> emit,
   ) async {
     try {
       await Share.share(
@@ -127,7 +127,7 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
 
   Future<void> _copyQuoteToClipboard(
     CopyQuoteToClipBoardEvent event,
-    Emitter<QuoteDataState> emit,
+    Emitter<QuoteState> emit,
   ) async {
     try {
       await Clipboard.setData(
@@ -145,13 +145,13 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
   }
 
   void _setCurrentIndex(
-      CurrentIndexChangeEvent event, Emitter<QuoteDataState> emit) {
+      CurrentIndexChangeEvent event, Emitter<QuoteState> emit) {
     emit(state.copyWith(currentIndex: event.index));
   }
 
   Future<void> _fetchListOfFavouriteQuote(
     FetchListOfFavouriteQuoteEvent event,
-    Emitter<QuoteDataState> emit,
+    Emitter<QuoteState> emit,
   ) async {
     try {
       emit(state.copyWith(status: QuoteStateStatus.loading));
@@ -181,7 +181,7 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
 
   Future<void> _addToFavourite(
     AddToFavouriteEvent event,
-    Emitter<QuoteDataState> emit,
+    Emitter<QuoteState> emit,
   ) async {
     try {
       final currentUserUid = firebaseAuthInstance.currentUser?.uid;
@@ -200,7 +200,7 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
 
   Future<void> _removeFromFavourite(
     RemoveFromFavouriteEvent event,
-    Emitter<QuoteDataState> emit,
+    Emitter<QuoteState> emit,
   ) async {
     try {
       final currentUserUid = firebaseAuthInstance.currentUser?.uid;
@@ -220,7 +220,7 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
 
   Future<void> _handleBookMark(
     HandleBookMarkEvent event,
-    Emitter<QuoteDataState> emit,
+    Emitter<QuoteState> emit,
   ) async {
     try {
       final currentUserUid = firebaseAuthInstance.currentUser?.uid;

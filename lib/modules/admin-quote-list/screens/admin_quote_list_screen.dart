@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quotes_app/core/constants/colors.dart';
 import 'package:quotes_app/core/routes/router/router.gr.dart';
-import 'package:quotes_app/modules/admin-quote-list/bloc/admin_quote_list_bloc.dart';
+import 'package:quotes_app/modules/admin-quote-list/bloc/admin_quote_bloc.dart';
 import 'package:quotes_app/modules/admin-quote-list/widgets/delete_alert_dialogue.dart';
 import 'package:quotes_app/modules/admin-quote-list/widgets/update_bottom_sheet_widget.dart';
 
@@ -17,7 +17,7 @@ class AdminQuoteListScreen extends StatefulWidget implements AutoRouteWrapper {
   @override
   Widget wrappedRoute(BuildContext context) {
     return BlocProvider(
-      create: (context) => AdminQuoteListBloc()
+      create: (context) => AdminBloc()
         ..add(
           const FetchAdminQuoteListEvent(),
         ),
@@ -42,7 +42,7 @@ class _AdminQuoteListScreenState extends State<AdminQuoteListScreen> {
           required updatedAuthor,
           required updatedQuote,
         }) {
-          context.read<AdminQuoteListBloc>().add(
+          context.read<AdminBloc>().add(
                 EditQuoteEvent(
                   docID: docID,
                   quote: updatedQuote,
@@ -63,7 +63,7 @@ class _AdminQuoteListScreenState extends State<AdminQuoteListScreen> {
       builder: (_) => DeleteAlertDialogue(
         onDeleteTap: () {
           context
-              .read<AdminQuoteListBloc>()
+              .read<AdminBloc>()
               .add(DeleteQuoteEvent(quoteDocId: quoteDocId));
           context.maybePop();
         },
@@ -81,24 +81,24 @@ class _AdminQuoteListScreenState extends State<AdminQuoteListScreen> {
           style: TextStyle(color: Colors.black),
         ),
         leading: IconButton(
-          onPressed: () => context.replaceRoute(const QuoteRoute()),
+          onPressed: () => context.replaceRoute(const HomeRoute()),
           icon: const Icon(Icons.arrow_back),
         ),
         backgroundColor: ColorPallet.lotusPink,
       ),
-      body: BlocListener<AdminQuoteListBloc, AdminQuoteListState>(
+      body: BlocListener<AdminBloc, AdminQuoteState>(
         listener: (context, state) {
-          if (state.status == AdminQuoteListStateStatus.failure) {
+          if (state.status == AdminQuoteStateStatus.failure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.error ?? '')),
             );
           }
         },
-        child: BlocBuilder<AdminQuoteListBloc, AdminQuoteListState>(
+        child: BlocBuilder<AdminBloc, AdminQuoteState>(
           builder: (context, state) {
-            if (state.status == AdminQuoteListStateStatus.loading) {
+            if (state.status == AdminQuoteStateStatus.loading) {
               return const Center(child: CircularProgressIndicator());
-            } else if (state.status == AdminQuoteListStateStatus.loaded &&
+            } else if (state.status == AdminQuoteStateStatus.loaded &&
                 state.adminQuoteList.isNotEmpty) {
               return Center(
                 child: ListView.builder(

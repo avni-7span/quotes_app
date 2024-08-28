@@ -17,8 +17,8 @@ enum APIStatus {
   error,
 }
 
-class QuoteDataState extends Equatable {
-  const QuoteDataState({
+class QuoteState extends Equatable {
+  const QuoteState({
     this.status = QuoteStateStatus.initial,
     this.apiStatus = APIStatus.initial,
     this.quoteList = const [],
@@ -49,7 +49,7 @@ class QuoteDataState extends Equatable {
         isFavourite
       ];
 
-  QuoteDataState copyWith({
+  QuoteState copyWith({
     QuoteStateStatus? status,
     APIStatus? apiStatus,
     List<QuoteModel>? quoteList,
@@ -58,7 +58,7 @@ class QuoteDataState extends Equatable {
     List<QuoteModel>? favouriteQuoteList,
     bool? isFavourite,
   }) {
-    return QuoteDataState(
+    return QuoteState(
       status: status ?? this.status,
       apiStatus: apiStatus ?? this.apiStatus,
       quoteList: quoteList ?? this.quoteList,
