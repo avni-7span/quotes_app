@@ -15,66 +15,91 @@ final firebaseAuth = FirebaseAuth.instance;
 
 class AdminQuoteListBloc
     extends Bloc<AdminQuoteListEvent, AdminQuoteListState> {
-  AdminQuoteListBloc()
-      : super(const AdminQuoteListState(
-            status: AdminQuoteListStateStatus.initial)) {
-    on<FetchingAdminQuoteListEvent>(_fetchAdminQuoteList);
+  AdminQuoteListBloc() : super(const AdminQuoteListState()) {
+    on<FetchAdminQuoteListEvent>(_fetchAdminQuoteList);
     on<EditQuoteEvent>(_editQuote);
     on<DeleteQuoteEvent>(_deleteQuote);
   }
 
-  Future<void> _fetchAdminQuoteList(FetchingAdminQuoteListEvent event,
-      Emitter<AdminQuoteListState> emit) async {
+  Future<void> _fetchAdminQuoteList(
+    FetchAdminQuoteListEvent event,
+    Emitter<AdminQuoteListState> emit,
+  ) async {
     try {
-      emit(state.copyWith(status: AdminQuoteListStateStatus.fetching));
-      final querySnapShot = await fireStoreInstance
+      emit(state.copyWith(status: AdminQuoteListStateStatus.loading));
+
+      /// get the quote list which is created by the current user
+      final quoteListSnapShot = await fireStoreInstance
           .collection('motivational_quotes')
           .where('created_by', isEqualTo: firebaseAuth.currentUser?.uid)
           .get();
-      final listOfQuotes = querySnapShot.docs
+
+      final quoteList = quoteListSnapShot.docs
           .map(
-            (snapshot) => Quotes.fromFireStore(snapshot.data()),
+            (snapshot) => QuoteModel.fromFireStore(
+              snapshot.data(),
+            ),
           )
           .toList();
+
       emit(
         state.copyWith(
-            listOfAdminQuotes: listOfQuotes,
-            status: AdminQuoteListStateStatus.loaded),
+          adminQuoteList: quoteList,
+          status: AdminQuoteListStateStatus.loaded,
+        ),
       );
     } catch (e) {
       emit(
         state.copyWith(
-            status: AdminQuoteListStateStatus.failure, error: e.toString()),
+          status: AdminQuoteListStateStatus.failure,
+          error: e.toString(),
+        ),
       );
     }
   }
 
+  /// Things that are happening in this function:
+  /// 1. Edit quote from firebase
+  /// 2. Delete local quote
+  /// 3. Add the updated quote
+  /// Which is wrong
+  // TODO
   Future<void> _editQuote(
-      EditQuoteEvent event, Emitter<AdminQuoteListState> emit) async {
+    EditQuoteEvent event,
+    Emitter<AdminQuoteListState> emit,
+  ) async {
     try {
       emit(state.copyWith(status: AdminQuoteListStateStatus.loading));
-      final reference =
+
+      final quoteDocument =
           fireStoreInstance.collection('motivational_quotes').doc(event.docID);
-      await reference.update({
-        'quote': event.quote,
-        'author': event.author == null || event.author == ''
-            ? 'unknown'
-            : event.author
-      });
-      state.listOfAdminQuotes.removeWhere(
-        (element) => element.docID == event.docID,
+
+      await quoteDocument.update(
+        {
+          'quote': event.quote,
+          'author': event.author == null || event.author == ''
+              ? 'unknown'
+              : event.author
+        },
       );
-      state.listOfAdminQuotes.add(Quotes(
-        author: event.author,
-        quote: event.quote,
-        createdBy: firebaseAuth.currentUser!.uid,
-        docID: event.docID,
-      ));
-      emit(state.copyWith(status: AdminQuoteListStateStatus.updated));
+
+      final adminQuoteList = List.of(state.adminQuoteList);
+
+      adminQuoteList.removeWhere((quote) => quote.docID == event.docID);
+
+      adminQuoteList.add(
+        QuoteModel(
+          author: event.author,
+          quote: event.quote,
+          createdBy: firebaseAuth.currentUser!.uid,
+          docID: event.docID,
+        ),
+      );
       emit(
         state.copyWith(
-            status: AdminQuoteListStateStatus.loaded,
-            listOfAdminQuotes: state.listOfAdminQuotes),
+          status: AdminQuoteListStateStatus.edited,
+          adminQuoteList: adminQuoteList,
+        ),
       );
     } catch (e) {
       emit(
@@ -87,20 +112,28 @@ class AdminQuoteListBloc
   }
 
   Future<void> _deleteQuote(
-      DeleteQuoteEvent event, Emitter<AdminQuoteListState> emit) async {
+    DeleteQuoteEvent event,
+    Emitter<AdminQuoteListState> emit,
+  ) async {
     try {
       emit(state.copyWith(status: AdminQuoteListStateStatus.loading));
+
       await fireStoreInstance
           .collection('motivational_quotes')
-          .doc(event.docID)
+          .doc(event.quoteDocId)
           .delete();
-      state.listOfAdminQuotes.removeWhere(
-        (element) => element.docID == event.docID,
+
+      final adminQuoteList = List.of(state.adminQuoteList);
+
+      adminQuoteList.removeWhere(
+        (element) => element.docID == event.quoteDocId,
       );
-      emit(state.copyWith(status: AdminQuoteListStateStatus.deleted));
-      emit(state.copyWith(
-          listOfAdminQuotes: state.listOfAdminQuotes,
-          status: AdminQuoteListStateStatus.loaded));
+      emit(
+        state.copyWith(
+          status: AdminQuoteListStateStatus.deleted,
+          adminQuoteList: adminQuoteList,
+        ),
+      );
     } catch (e) {
       emit(
         state.copyWith(

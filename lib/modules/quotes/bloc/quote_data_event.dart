@@ -8,7 +8,6 @@ class QuoteDataEvent extends Equatable {
 
 class FetchQuoteDataEvent extends QuoteDataEvent {
   const FetchQuoteDataEvent();
-  // final int quoteNumber;
 }
 
 class FetchAdminDetailEvent extends QuoteDataEvent {
@@ -53,9 +52,5 @@ class RemoveFromFavouriteEvent extends QuoteDataEvent {
 
 class HandleBookMarkEvent extends QuoteDataEvent {
   const HandleBookMarkEvent({required this.quote});
-  final Quotes quote;
-}
-
-class FetchBookmarkInfoEvent extends QuoteDataEvent {
-  const FetchBookmarkInfoEvent();
+  final QuoteModel quote;
 }

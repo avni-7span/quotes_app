@@ -7,19 +7,24 @@ class AdminQuoteListEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class FetchingAdminQuoteListEvent extends AdminQuoteListEvent {
-  const FetchingAdminQuoteListEvent();
+class FetchAdminQuoteListEvent extends AdminQuoteListEvent {
+  const FetchAdminQuoteListEvent();
 }
 
 class EditQuoteEvent extends AdminQuoteListEvent {
-  const EditQuoteEvent(
-      {required this.docID, required this.quote, required this.author});
+  const EditQuoteEvent({
+    required this.docID,
+    required this.quote,
+    required this.author,
+  });
+
   final String docID;
   final String quote;
   final String? author;
 }
 
 class DeleteQuoteEvent extends AdminQuoteListEvent {
-  const DeleteQuoteEvent({required this.docID});
-  final String docID;
+  const DeleteQuoteEvent({required this.quoteDocId});
+
+  final String quoteDocId;
 }

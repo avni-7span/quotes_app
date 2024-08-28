@@ -144,7 +144,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 AdminCheckEvent(_isChecked),
                               );
                           context.read<SignUpBloc>().add(
-                                const SigneUpButtonPressed(),
+                                const SignUpButtonPressed(),
                               );
                         },
                         buttonLabelWidget:

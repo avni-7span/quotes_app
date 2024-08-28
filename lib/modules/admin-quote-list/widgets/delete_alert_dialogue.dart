@@ -5,9 +5,9 @@ import 'package:quotes_app/core/constants/const_strings.dart';
 import 'package:quotes_app/modules/admin-quote-list/bloc/admin_quote_list_bloc.dart';
 
 class DeleteAlertDialogue extends StatelessWidget {
-  const DeleteAlertDialogue({super.key, required this.index});
+  const DeleteAlertDialogue({super.key, required this.onDeleteTap});
 
-  final int index;
+  final VoidCallback onDeleteTap;
 
   @override
   Widget build(BuildContext context) {
@@ -19,19 +19,7 @@ class DeleteAlertDialogue extends StatelessWidget {
           child: const Text('Cancel'),
         ),
         TextButton(
-          onPressed: () {
-            final docId = context
-                .read<AdminQuoteListBloc>()
-                .state
-                .listOfAdminQuotes[index]
-                .docID;
-            context.read<AdminQuoteListBloc>().add(
-                  DeleteQuoteEvent(docID: docId!
-                      // docID: state.listOfAdminQuotes[index].docID!,
-                      ),
-                );
-            context.maybePop();
-          },
+          onPressed: onDeleteTap,
           child: const Text('Yes'),
         )
       ],

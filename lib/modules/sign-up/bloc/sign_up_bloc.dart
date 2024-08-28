@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:formz/formz.dart';
 import 'package:quotes_app/core/authentication-repository/authentication_failure.dart';
 import 'package:quotes_app/core/authentication-repository/authentication_repository.dart';
@@ -16,15 +15,18 @@ part 'sign_up_event.dart';
 part 'sign_up_state.dart';
 
 class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
-  SignUpBloc() : super(const SignUpState(status: SignUpStateStatus.initial)) {
+  SignUpBloc() : super(const SignUpState()) {
     on<EmailChangeEvent>(_checkEmail);
     on<PasswordChangeEvent>(_checkPassword);
     on<ConfirmPasswordChangeEvent>(_checkConfirmPassword);
     on<AdminCheckEvent>(checkAdmin);
-    on<SigneUpButtonPressed>(signUpAndSendVerificationEmail);
+    on<SignUpButtonPressed>(signUpAndSendVerificationEmail);
   }
 
-  void _checkEmail(EmailChangeEvent event, Emitter<SignUpState> emit) {
+  void _checkEmail(
+    EmailChangeEvent event,
+    Emitter<SignUpState> emit,
+  ) {
     final email = Email.dirty(event.email);
     emit(
       state.copyWith(
@@ -34,7 +36,10 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     );
   }
 
-  void _checkPassword(PasswordChangeEvent event, Emitter<SignUpState> emit) {
+  void _checkPassword(
+    PasswordChangeEvent event,
+    Emitter<SignUpState> emit,
+  ) {
     final password = Password.dirty(event.password);
     emit(
       state.copyWith(
@@ -45,7 +50,9 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   }
 
   void _checkConfirmPassword(
-      ConfirmPasswordChangeEvent event, Emitter<SignUpState> emit) {
+    ConfirmPasswordChangeEvent event,
+    Emitter<SignUpState> emit,
+  ) {
     final confirmPass =
         ConfirmPassword.dirty(state.password.value, event.confirmPassword);
     emit(
@@ -56,14 +63,19 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     );
   }
 
-  void checkAdmin(AdminCheckEvent event, Emitter<SignUpState> emit) {
+  void checkAdmin(
+    AdminCheckEvent event,
+    Emitter<SignUpState> emit,
+  ) {
     emit(
       state.copyWith(isAdmin: event.isAdmin),
     );
   }
 
   Future<void> signUpAndSendVerificationEmail(
-      SigneUpButtonPressed event, Emitter<SignUpState> emit) async {
+    SignUpButtonPressed event,
+    Emitter<SignUpState> emit,
+  ) async {
     final email = Email.dirty(state.email.value);
     final password = Password.dirty(state.password.value);
     final confirmPass = ConfirmPassword.dirty(
@@ -87,7 +99,8 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
             .set({
           'email': user.user?.email,
           'id': user.user?.uid,
-          'isAdmin': state.isAdmin
+          'isAdmin': state.isAdmin,
+          'favourite_quote_id': []
         });
         await AuthenticationRepository().sendVerificationEmail();
         emit(state.copyWith(status: SignUpStateStatus.success));

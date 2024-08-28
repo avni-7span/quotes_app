@@ -110,18 +110,13 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
               children: [
                 IconButton(
                     onPressed: () {
-                      final quoteToHandle = state.listOfQuotes[
-                          state.currentIndex ?? state.listOfQuotes.length - 1];
+                      final quoteToHandle = state.quoteList[
+                          state.currentIndex ?? state.quoteList.length - 1];
                       context
                           .read<QuoteDataBloc>()
                           .add(HandleBookMarkEvent(quote: quoteToHandle));
                     },
-                    icon: iconData(
-                        state.listOfFavQuoteIds,
-                        state
-                            .listOfQuotes[state.currentIndex ??
-                                state.listOfQuotes.length - 1]
-                            .docID)),
+                    icon: const Icon(Icons.book_outlined)),
                 const Text(
                   'Favourite',
                   maxLines: 2,

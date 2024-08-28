@@ -1,24 +1,27 @@
 import 'package:equatable/equatable.dart';
 
-class Quotes extends Equatable {
-  const Quotes({this.quote, this.author, this.docID, this.createdBy});
+class QuoteModel extends Equatable {
+  const QuoteModel({
+    required this.quote,
+    required this.docID,
+    required this.createdBy,
+    this.author,
+  });
 
-  final String? quote;
+  final String quote;
   final String? author;
-  final String? docID;
-  final String? createdBy;
+  final String docID;
+  final String createdBy;
 
-  static const emptyQuoteData = Quotes(author: '', quote: '');
-
-  static Quotes fromFireStore(Map<String, dynamic> data) {
-    return Quotes(
+  factory QuoteModel.fromFireStore(Map<String, dynamic> data) {
+    return QuoteModel(
         quote: data['quote'],
         author: data['author'],
         docID: data['doc_id'],
         createdBy: data['created_by']);
   }
 
-  static Map<String, dynamic> toFireStore(Quotes quote) {
+  static Map<String, dynamic> toFireStore(QuoteModel quote) {
     return {
       'quote': quote.quote,
       'author': quote.author,

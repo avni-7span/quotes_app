@@ -16,8 +16,8 @@ class PasswordFieldChangeEvent extends LoginEvent {
   final String password;
 }
 
-class LoginButtonPressedEvent extends LoginEvent {
-  const LoginButtonPressedEvent();
+class LoginWithVerificationEvent extends LoginEvent {
+  const LoginWithVerificationEvent();
 }
 
 class SendVerificationEmail extends LoginEvent {

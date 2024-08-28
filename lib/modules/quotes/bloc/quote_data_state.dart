@@ -2,63 +2,63 @@ part of 'quote_data_bloc.dart';
 
 enum QuoteStateStatus {
   initial,
-  loading,
-  loaded,
-  error,
   adminFetched,
   copiedSuccessfully,
   favouriteListLoaded,
-  fetching,
+  quoteListLoaded
+}
+
+enum APIStatus {
+  initial,
+  loading,
+  loaded,
+  error,
 }
 
 class QuoteDataState extends Equatable {
   const QuoteDataState({
     this.status = QuoteStateStatus.initial,
-    this.listOfQuotes = const [],
-    this.user = User.empty,
+    this.apiStatus = APIStatus.initial,
+    this.quoteList = const [],
+    this.user = UserModel.empty,
+
+    // TODO
     this.currentIndex,
-    this.isFavourite = false,
-    this.listOfFavouriteQuotes = const [],
-    this.listOfFavQuoteIds,
+    this.favouriteQuoteList = const [],
   });
 
   final QuoteStateStatus status;
-  final List<Quotes> listOfQuotes;
-  final User user;
+  final APIStatus apiStatus;
+  final List<QuoteModel> quoteList;
+  final UserModel user;
   final int? currentIndex;
-  final bool isFavourite;
-  final List<Quotes> listOfFavouriteQuotes;
-  final List<dynamic>? listOfFavQuoteIds;
+  final List<QuoteModel> favouriteQuoteList;
 
   @override
   List<Object?> get props => [
         status,
-        listOfQuotes,
+        quoteList,
         user,
         currentIndex,
-        isFavourite,
-        listOfFavouriteQuotes,
-        listOfFavQuoteIds,
+        favouriteQuoteList,
+        apiStatus,
       ];
 
   QuoteDataState copyWith({
     QuoteStateStatus? status,
-    List<Quotes>? listOfQuotes,
-    User? user,
+    APIStatus? apiStatus,
+    List<QuoteModel>? quoteList,
+    UserModel? user,
     int? currentIndex,
-    bool? isFavourite,
-    List<Quotes>? listOfFavouriteQuotes,
-    List<dynamic>? listOfFavQuoteIds,
+    List<QuoteModel>? favouriteQuoteList,
   }) {
     return QuoteDataState(
       status: status ?? this.status,
-      listOfQuotes: listOfQuotes ?? this.listOfQuotes,
+      apiStatus: apiStatus ?? this.apiStatus,
+      quoteList: quoteList ?? this.quoteList,
       user: user ?? this.user,
       currentIndex: currentIndex ?? this.currentIndex,
-      isFavourite: isFavourite ?? this.isFavourite,
-      listOfFavouriteQuotes:
-          listOfFavouriteQuotes ?? this.listOfFavouriteQuotes,
-      listOfFavQuoteIds: listOfFavQuoteIds ?? this.listOfFavQuoteIds,
+      favouriteQuoteList: favouriteQuoteList ?? this.favouriteQuoteList,
     );
   }
 }

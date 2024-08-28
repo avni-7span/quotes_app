@@ -29,18 +29,20 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isVisible = true;
   static const TextStyle textStyle = TextStyle(fontSize: 20);
 
-  Future _showAlertDialogue({required BuildContext loginScreenContext}) async {
+  Future showUserVerificationAlertDialogue(
+      {required BuildContext context}) async {
     showDialog(
-      context: loginScreenContext,
+      context: context,
       useRootNavigator: true,
-      builder: (context) {
-        return BlocProvider.value(
-            value: BlocProvider.of<LoginBloc>(loginScreenContext),
-            child: VerificationAlertWidget(
-              onClosedTap: () {
-                Navigator.pop(loginScreenContext);
-              },
-            ));
+      builder: (_) {
+        return VerificationAlertWidget(
+          onResendEmailVerificationTap: () {
+            context.read<LoginBloc>().add(const SendVerificationEmail());
+          },
+          onClosedTap: () {
+            Navigator.pop(context);
+          },
+        );
       },
     );
   }
@@ -52,12 +54,12 @@ class _LoginScreenState extends State<LoginScreen> {
         if (state.status == LoginStateStatus.success) {
           await context.replaceRoute(const QuoteRoute());
         } else if (state.status == LoginStateStatus.notVerified) {
-          _showAlertDialogue(loginScreenContext: context);
+          showUserVerificationAlertDialogue(context: context);
         } else if (state.status == LoginStateStatus.emailSent) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text(
-                  'We have send you verification email; Please chech inbox'),
+                  'We have send you verification email; Please check inbox'),
             ),
           );
         } else if (state.status == LoginStateStatus.failure) {
@@ -122,7 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () {
                             context
                                 .read<LoginBloc>()
-                                .add(const LoginButtonPressedEvent());
+                                .add(const LoginWithVerificationEvent());
                           },
                           buttonLabelWidget:
                               state.status == LoginStateStatus.loading

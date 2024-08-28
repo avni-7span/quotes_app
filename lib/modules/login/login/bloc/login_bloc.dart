@@ -14,17 +14,18 @@ part 'login_event.dart';
 part 'login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  LoginBloc() : super(const LoginState(status: LoginStateStatus.initial)) {
+  LoginBloc() : super(const LoginState()) {
     on<EmailFieldChangeEvent>(_checkEmailField);
     on<PasswordFieldChangeEvent>(_checkPasswordField);
-    on<LoginButtonPressedEvent>(_logIn);
+    on<LoginWithVerificationEvent>(_logInWithVerification);
     on<SendVerificationEmail>(_sendVerificationEmail);
   }
 
-  final currentUser = FirebaseAuth.instance.currentUser;
-
-  void _checkEmailField(EmailFieldChangeEvent event, Emitter<LoginState> emit) {
-    emit(state.copyWith(status: LoginStateStatus.emailChanging));
+  void _checkEmailField(
+    EmailFieldChangeEvent event,
+    Emitter<LoginState> emit,
+  ) {
+    emit(state.copyWith(status: LoginStateStatus.loading));
     final email = Email.dirty(event.email);
     emit(
       state.copyWith(
@@ -35,8 +36,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   }
 
   void _checkPasswordField(
-      PasswordFieldChangeEvent event, Emitter<LoginState> emit) {
-    emit(state.copyWith(status: LoginStateStatus.passwordChanging));
+    PasswordFieldChangeEvent event,
+    Emitter<LoginState> emit,
+  ) {
+    emit(state.copyWith(status: LoginStateStatus.loading));
     final password = Field.dirty(event.password);
     emit(
       state.copyWith(
@@ -46,8 +49,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     );
   }
 
-  Future<void> _logIn(
-      LoginButtonPressedEvent event, Emitter<LoginState> emit) async {
+  Future<void> _logInWithVerification(
+    LoginWithVerificationEvent event,
+    Emitter<LoginState> emit,
+  ) async {
     final email = Email.dirty(state.email.value);
     final password = Field.dirty(state.password.value);
     emit(
@@ -61,17 +66,22 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     if (state.isValid) {
       try {
         emit(state.copyWith(status: LoginStateStatus.loading));
+
         final user = await AuthenticationRepository().loginWithEmailPassword(
             email: state.email.value, password: state.password.value);
+
         final userData = FirebaseAuth.instance.currentUser;
 
         /// this is new user made on log in
-        /// (if we will not create new instance here it will give old user details which will surely not verified)
+        /// (if we will not create new instance here,
+        /// it will give old user details (stored when signup) which will surely not verified)
         final bool? isVerified = userData?.emailVerified;
+
         if (isVerified == true) {
           emit(state.copyWith(status: LoginStateStatus.success));
         } else {
-          // FirebaseAuth.instance.signOut();
+          // FirebaseAuth.instance.signOut(); - do i need to sign out here ?
+          // i have guard in home screen which check both thing if logged in and verified.
           emit(state.copyWith(status: LoginStateStatus.notVerified));
         }
       } on FirebaseException catch (e) {
@@ -93,7 +103,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     try {
       final userData = FirebaseAuth.instance.currentUser;
       await userData?.sendEmailVerification();
-      print('user send email :${userData?.email}');
       emit(state.copyWith(status: LoginStateStatus.emailSent));
     } catch (e) {
       emit(state.copyWith(status: LoginStateStatus.failure));

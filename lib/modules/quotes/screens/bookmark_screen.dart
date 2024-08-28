@@ -27,7 +27,7 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
   Widget build(BuildContext context) {
     return BlocListener<QuoteDataBloc, QuoteDataState>(
       listener: (context, state) {
-        if (state.status == QuoteStateStatus.error) {
+        if (state.apiStatus == APIStatus.error) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Something went wrong.'),
@@ -49,10 +49,10 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
         ),
         body: BlocBuilder<QuoteDataBloc, QuoteDataState>(
           builder: (context, state) {
-            if (state.status == QuoteStateStatus.loading) {
+            if (state.apiStatus == APIStatus.loading) {
               return const Center(child: CircularProgressIndicator());
             } else if (state.status == QuoteStateStatus.favouriteListLoaded &&
-                state.listOfFavouriteQuotes.isEmpty) {
+                state.favouriteQuoteList.isEmpty) {
               return const Center(
                 child: Text(
                   'You have not favourite any quotes yet',
@@ -60,9 +60,9 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
                 ),
               );
             } else if (state.status == QuoteStateStatus.favouriteListLoaded &&
-                state.listOfFavouriteQuotes.isNotEmpty) {
+                state.favouriteQuoteList.isNotEmpty) {
               return ListView.builder(
-                itemCount: state.listOfFavouriteQuotes.length,
+                itemCount: state.favouriteQuoteList.length,
                 itemBuilder: (context, index) {
                   return Card(
                     margin: const EdgeInsets.all(15),
@@ -75,22 +75,22 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            state.listOfFavouriteQuotes[index].quote ?? '',
+                            state.favouriteQuoteList[index].quote,
                             style: const TextStyle(fontSize: 20),
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 10),
                           Text(
-                            '- ${state.listOfFavouriteQuotes[index].author}',
+                            '- ${state.favouriteQuoteList[index].author}',
                             style: const TextStyle(fontSize: 20),
                           ),
                           const SizedBox(height: 10),
                           ElevatedButton(
                               onPressed: () {
                                 final docID =
-                                    state.listOfFavouriteQuotes[index].docID;
+                                    state.favouriteQuoteList[index].docID;
                                 context.read<QuoteDataBloc>().add(
-                                      RemoveFromFavouriteEvent(docID: docID!),
+                                      RemoveFromFavouriteEvent(docID: docID),
                                     );
                               },
                               child: const Text('remove from favourite'))

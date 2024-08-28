@@ -26,6 +26,6 @@ class AdminCheckEvent extends SignUpEvent {
   final bool isAdmin;
 }
 
-class SigneUpButtonPressed extends SignUpEvent {
-  const SigneUpButtonPressed();
+class SignUpButtonPressed extends SignUpEvent {
+  const SignUpButtonPressed();
 }

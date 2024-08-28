@@ -21,7 +21,9 @@ class AdminQuoteBloc extends Bloc<AdminQuoteEvent, AdminQuoteState> {
   }
 
   Future<void> _addQuoteToFireStore(
-      AddQuoteToFireStoreEvent event, Emitter<AdminQuoteState> emit) async {
+    AddQuoteToFireStoreEvent event,
+    Emitter<AdminQuoteState> emit,
+  ) async {
     try {
       final quote = Field.dirty(state.quote.value);
       String? author;
@@ -38,18 +40,18 @@ class AdminQuoteBloc extends Bloc<AdminQuoteEvent, AdminQuoteState> {
         } else {
           author = event.author;
         }
-        final ref = await fireStoreInstance
+        final addedQuote = await fireStoreInstance
             .collection('motivational_quotes')
             .add({
           'quote': state.quote.value,
           'author': author,
           'created_by': currentUser?.uid
         });
-        final id = ref.id;
+        final quoteDocId = addedQuote.id;
         await fireStoreInstance
             .collection('motivational_quotes')
-            .doc(id)
-            .update({'doc_id': id});
+            .doc(quoteDocId)
+            .update({'doc_id': quoteDocId});
         emit(state.copyWith(status: AdminQuoteStateStatus.success));
       } else {
         emit(state.copyWith(status: AdminQuoteStateStatus.failure));
@@ -60,7 +62,9 @@ class AdminQuoteBloc extends Bloc<AdminQuoteEvent, AdminQuoteState> {
   }
 
   void _checkQuoteField(
-      QuoteFieldChangeEvent event, Emitter<AdminQuoteState> emit) {
+    QuoteFieldChangeEvent event,
+    Emitter<AdminQuoteState> emit,
+  ) {
     final quote = Field.dirty(event.quote);
     emit(
       state.copyWith(

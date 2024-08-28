@@ -20,7 +20,9 @@ class ForgotPasswordBloc
   final authInstance = FirebaseAuth.instance;
 
   void _checkEmailField(
-      EmailFieldChangeEvent event, Emitter<ForgotPasswordState> emit) {
+    EmailFieldChangeEvent event,
+    Emitter<ForgotPasswordState> emit,
+  ) {
     final email = Email.dirty(event.email);
     emit(
       state.copyWith(
@@ -30,8 +32,10 @@ class ForgotPasswordBloc
     );
   }
 
-  Future<void> _sendEmailForPassword(SendEmailForPasswordEvent event,
-      Emitter<ForgotPasswordState> emit) async {
+  Future<void> _sendEmailForPassword(
+    SendEmailForPasswordEvent event,
+    Emitter<ForgotPasswordState> emit,
+  ) async {
     try {
       final email = Email.dirty(state.email.value);
       emit(

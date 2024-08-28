@@ -17,64 +17,56 @@ class AdminQuoteListScreen extends StatefulWidget implements AutoRouteWrapper {
   @override
   Widget wrappedRoute(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          AdminQuoteListBloc()..add(const FetchingAdminQuoteListEvent()),
+      create: (context) => AdminQuoteListBloc()
+        ..add(
+          const FetchAdminQuoteListEvent(),
+        ),
       child: this,
     );
   }
 }
 
 class _AdminQuoteListScreenState extends State<AdminQuoteListScreen> {
-  // void _showAlertDialogue(BuildContext context) {
-  //   showDialog(
-  //     context: context,
-  //     builder: (_) => AlertDialog(
-  //       title: const Text('Access Denied'),
-  //       content: const Text(ConstantStrings.adminAdmin),
-  //       actions: [
-  //         TextButton(
-  //           onPressed: context.maybePop,
-  //           child: const Text('Cancel'),
-  //         ),
-  //         TextButton(
-  //           onPressed: () {},
-  //           child: const Text('Yes'),
-  //         )
-  //       ],
-  //     ),
-  //   );
-  // }
-
-  Future _showBottomSheet(
-      {required String docID,
-      required String quote,
-      required String author,
-      required BuildContext quoteScreenContext}) {
+  Future<void> showQuoteUpdateBottomSheet({
+    required String docID,
+    required String quote,
+    required String author,
+  }) {
     return showModalBottomSheet(
-      context: quoteScreenContext,
-      elevation: 5,
+      context: context,
       isScrollControlled: true,
-      builder: (context) => BlocProvider.value(
-        value: BlocProvider.of<AdminQuoteListBloc>(quoteScreenContext),
-        child: UpdateBottomSheetWidget(
-          docID: docID,
-          quote: quote,
-          author: author,
-          onClosedTap: () {
-            context.maybePop();
-          },
-        ),
+      builder: (ctx) => UpdateBottomSheetWidget(
+        quote: quote,
+        author: author,
+        onUpdateTap: ({
+          required updatedAuthor,
+          required updatedQuote,
+        }) {
+          context.read<AdminQuoteListBloc>().add(
+                EditQuoteEvent(
+                  docID: docID,
+                  quote: updatedQuote,
+                  author: updatedAuthor,
+                ),
+              );
+          // TODO
+          // ..add(const FetchAdminQuoteListEvent());
+          ctx.maybePop();
+        },
       ),
     );
   }
 
-  void showAlertDialogue(
-      {required BuildContext dialogueContext, required int index}) {
+  void showDeleteQuoteAlertDialogue({required String quoteDocId}) {
     showDialog(
-      context: dialogueContext,
-      builder: (_context) => BlocProvider.value(
-        value: BlocProvider.of<AdminQuoteListBloc>(dialogueContext),
-        child: DeleteAlertDialogue(index: index),
+      context: context,
+      builder: (_) => DeleteAlertDialogue(
+        onDeleteTap: () {
+          context
+              .read<AdminQuoteListBloc>()
+              .add(DeleteQuoteEvent(quoteDocId: quoteDocId));
+          context.maybePop();
+        },
       ),
     );
   }
@@ -89,31 +81,28 @@ class _AdminQuoteListScreenState extends State<AdminQuoteListScreen> {
           style: TextStyle(color: Colors.black),
         ),
         leading: IconButton(
-            onPressed: () => context.replaceRoute(const QuoteRoute()),
-            icon: const Icon(Icons.arrow_back)),
+          onPressed: () => context.replaceRoute(const QuoteRoute()),
+          icon: const Icon(Icons.arrow_back),
+        ),
         backgroundColor: ColorPallet.lotusPink,
       ),
       body: BlocListener<AdminQuoteListBloc, AdminQuoteListState>(
         listener: (context, state) {
           if (state.status == AdminQuoteListStateStatus.failure) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.error ?? ''),
-              ),
+              SnackBar(content: Text(state.error ?? '')),
             );
           }
         },
         child: BlocBuilder<AdminQuoteListBloc, AdminQuoteListState>(
           builder: (context, state) {
-            if (state.status == AdminQuoteListStateStatus.fetching) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
+            if (state.status == AdminQuoteListStateStatus.loading) {
+              return const Center(child: CircularProgressIndicator());
             } else if (state.status == AdminQuoteListStateStatus.loaded &&
-                state.listOfAdminQuotes.isNotEmpty) {
+                state.adminQuoteList.isNotEmpty) {
               return Center(
                 child: ListView.builder(
-                  itemCount: state.listOfAdminQuotes.length,
+                  itemCount: state.adminQuoteList.length,
                   itemBuilder: (context, index) {
                     return Card(
                       margin: const EdgeInsets.all(15),
@@ -126,13 +115,13 @@ class _AdminQuoteListScreenState extends State<AdminQuoteListScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              state.listOfAdminQuotes[index].quote ?? '',
+                              state.adminQuoteList[index].quote,
                               style: const TextStyle(fontSize: 20),
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              '- ${state.listOfAdminQuotes[index].author}',
+                              '- ${state.adminQuoteList[index].author}',
                               style: const TextStyle(fontSize: 20),
                             ),
                             const SizedBox(height: 10),
@@ -140,21 +129,22 @@ class _AdminQuoteListScreenState extends State<AdminQuoteListScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 ElevatedButton(
-                                    onPressed: () => _showBottomSheet(
-                                        docID: state
-                                            .listOfAdminQuotes[index].docID!,
-                                        quote: state
-                                            .listOfAdminQuotes[index].quote!,
-                                        author: state.listOfAdminQuotes[index]
-                                                .author ??
-                                            '',
-                                        quoteScreenContext: context),
+                                    onPressed: () => showQuoteUpdateBottomSheet(
+                                          docID:
+                                              state.adminQuoteList[index].docID,
+                                          quote:
+                                              state.adminQuoteList[index].quote,
+                                          author: state.adminQuoteList[index]
+                                                  .author ??
+                                              '',
+                                        ),
                                     child: const Text('Edit quote')),
                                 ElevatedButton(
                                     onPressed: () {
-                                      showAlertDialogue(
-                                          index: index,
-                                          dialogueContext: context);
+                                      showDeleteQuoteAlertDialogue(
+                                        quoteDocId:
+                                            state.adminQuoteList[index].docID,
+                                      );
                                     },
                                     child: const Text('Delete quote'))
                               ],
@@ -166,8 +156,7 @@ class _AdminQuoteListScreenState extends State<AdminQuoteListScreen> {
                   },
                 ),
               );
-            } else if (state.status == AdminQuoteListStateStatus.loaded &&
-                state.listOfAdminQuotes.isEmpty) {
+            } else {
               return const Center(
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20),
@@ -179,36 +168,9 @@ class _AdminQuoteListScreenState extends State<AdminQuoteListScreen> {
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 25),
                       ),
-                      // SizedBox(height: 40),
-                      // BlocBuilder<QuoteDataBloc, QuoteDataState>(
-                      //   builder: (context, state) {
-                      //     return ElevatedButton(
-                      //       onPressed: () async {
-                      //         if (state.user.isAdmin!) {
-                      //           await context
-                      //               .pushRoute(const CreateQuoteRoute());
-                      //         } else {
-                      //           _showAlertDialogue(context);
-                      //         }
-                      //       },
-                      //       child: const Row(
-                      //         mainAxisSize: MainAxisSize.min,
-                      //         children: [
-                      //           Icon(Icons.add),
-                      //           SizedBox(width: 10),
-                      //           Text('Start adding quote')
-                      //         ],
-                      //       ),
-                      //     );
-                      //   },
-                      // )
                     ],
                   ),
                 ),
-              );
-            } else {
-              return const Center(
-                child: CircularProgressIndicator(),
               );
             }
           },

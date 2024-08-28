@@ -5,16 +5,17 @@ import 'package:quotes_app/modules/admin-quote-list/bloc/admin_quote_list_bloc.d
 class UpdateBottomSheetWidget extends StatefulWidget {
   const UpdateBottomSheetWidget({
     super.key,
-    required this.docID,
     required this.author,
     required this.quote,
-    required this.onClosedTap,
+    required this.onUpdateTap,
   });
 
-  final String docID;
   final String author;
   final String quote;
-  final VoidCallback onClosedTap;
+  final Function({
+    required String updatedAuthor,
+    required String updatedQuote,
+  }) onUpdateTap;
 
   @override
   State<UpdateBottomSheetWidget> createState() =>
@@ -31,6 +32,13 @@ class _UpdateBottomSheetWidgetState extends State<UpdateBottomSheetWidget> {
     super.initState();
     _quoteController.text = widget.quote;
     _authorController.text = widget.author;
+  }
+
+  @override
+  void dispose() {
+    _quoteController.dispose();
+    _authorController.dispose();
+    super.dispose();
   }
 
   @override
@@ -66,19 +74,14 @@ class _UpdateBottomSheetWidgetState extends State<UpdateBottomSheetWidget> {
           ),
           const SizedBox(height: 20),
           ElevatedButton(
-              onPressed: () {
-                context.read<AdminQuoteListBloc>().add(
-                      EditQuoteEvent(
-                          docID: widget.docID,
-                          quote: _quoteController.text,
-                          author: _authorController.text),
-                    );
-                context
-                    .read<AdminQuoteListBloc>()
-                    .add(const FetchingAdminQuoteListEvent());
-                widget.onClosedTap();
-              },
-              child: const Text('Update'))
+            onPressed: () {
+              widget.onUpdateTap(
+                updatedAuthor: _authorController.text,
+                updatedQuote: _quoteController.text,
+              );
+            },
+            child: const Text('Update'),
+          )
         ],
       ),
     );

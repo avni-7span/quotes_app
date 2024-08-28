@@ -17,9 +17,9 @@ class _QuoteCardState extends State<QuoteCard> {
     final size = MediaQuery.of(context).size;
     return BlocBuilder<QuoteDataBloc, QuoteDataState>(
       builder: (context, state) {
-        if (state.status == QuoteStateStatus.fetching) {
+        if (state.apiStatus == APIStatus.loading) {
           return const Center(child: CircularProgressIndicator());
-        } else if (state.status == QuoteStateStatus.loaded ||
+        } else if (state.status == QuoteStateStatus.quoteListLoaded ||
             state.status == QuoteStateStatus.copiedSuccessfully) {
           return Container(
             margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -44,13 +44,13 @@ class _QuoteCardState extends State<QuoteCard> {
                     ),
                     const SizedBox(height: 50),
                     Text(
-                      state.listOfQuotes[widget.index].quote ?? '',
+                      state.quoteList[widget.index].quote ?? '',
                       textAlign: TextAlign.center,
                       style: const TextStyle(fontSize: 20, color: Colors.white),
                     ),
                     const SizedBox(height: 50),
                     Text(
-                      '- ${state.listOfQuotes[widget.index].author}',
+                      '- ${state.quoteList[widget.index].author}',
                       textAlign: TextAlign.center,
                       style: const TextStyle(fontSize: 20, color: Colors.white),
                     ),

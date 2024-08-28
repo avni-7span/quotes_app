@@ -22,8 +22,7 @@ class QuoteScreen extends StatefulWidget implements AutoRouteWrapper {
     return BlocProvider(
       create: (context) => QuoteDataBloc()
         ..add(const FetchQuoteDataEvent())
-        ..add(const FetchAdminDetailEvent())
-        ..add(const FetchBookmarkInfoEvent()),
+        ..add(const FetchAdminDetailEvent()),
       child: this,
     );
   }
@@ -60,7 +59,7 @@ class _QuoteScreenState extends State<QuoteScreen> {
     return BlocListener<QuoteDataBloc, QuoteDataState>(
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
-        if (state.status == QuoteStateStatus.error) {
+        if (state.apiStatus == APIStatus.error) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Something went wrong.'),
@@ -104,7 +103,7 @@ class _QuoteScreenState extends State<QuoteScreen> {
                   alignment: Alignment.center,
                   child: CarouselSlider(
                     items: List<QuoteCard>.generate(
-                      state.listOfQuotes.length,
+                      state.quoteList.length,
                       (int) {
                         return QuoteCard(index: int);
                       },
