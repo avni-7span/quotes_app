@@ -5,7 +5,9 @@ enum QuoteStateStatus {
   adminFetched,
   copiedSuccessfully,
   favouriteListLoaded,
-  quoteListLoaded
+  quoteListLoaded,
+  loading,
+  loaded
 }
 
 enum APIStatus {
@@ -21,6 +23,7 @@ class QuoteDataState extends Equatable {
     this.apiStatus = APIStatus.initial,
     this.quoteList = const [],
     this.user = UserModel.empty,
+    this.isFavourite = false,
 
     // TODO
     this.currentIndex,
@@ -33,6 +36,7 @@ class QuoteDataState extends Equatable {
   final UserModel user;
   final int? currentIndex;
   final List<QuoteModel> favouriteQuoteList;
+  final bool isFavourite;
 
   @override
   List<Object?> get props => [
@@ -42,6 +46,7 @@ class QuoteDataState extends Equatable {
         currentIndex,
         favouriteQuoteList,
         apiStatus,
+        isFavourite
       ];
 
   QuoteDataState copyWith({
@@ -51,6 +56,7 @@ class QuoteDataState extends Equatable {
     UserModel? user,
     int? currentIndex,
     List<QuoteModel>? favouriteQuoteList,
+    bool? isFavourite,
   }) {
     return QuoteDataState(
       status: status ?? this.status,
@@ -59,6 +65,7 @@ class QuoteDataState extends Equatable {
       user: user ?? this.user,
       currentIndex: currentIndex ?? this.currentIndex,
       favouriteQuoteList: favouriteQuoteList ?? this.favouriteQuoteList,
+      isFavourite: isFavourite ?? this.isFavourite,
     );
   }
 }

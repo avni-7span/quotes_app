@@ -20,7 +20,6 @@ part 'quote_data_state.dart';
 
 final db = FirebaseFirestore.instance;
 final firebaseAuthInstance = firebase_auth.FirebaseAuth.instance;
-final currentUserUid = firebaseAuthInstance.currentUser?.uid;
 
 class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
   QuoteDataBloc() : super(const QuoteDataState()) {
@@ -70,6 +69,7 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
   ) async {
     try {
       emit(state.copyWith(apiStatus: APIStatus.loading));
+      final currentUserUid = firebaseAuthInstance.currentUser?.uid;
       final userDocSnapshot =
           await db.collection('users').doc(currentUserUid).get();
       final user = UserModel.fromFireStore(userDocSnapshot);
@@ -89,9 +89,8 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
         Material(
           child: ScreenshotWidget(
             quote: state
-                    .quoteList[state.currentIndex ?? state.quoteList.length - 1]
-                    .quote ??
-                '',
+                .quoteList[state.currentIndex ?? state.quoteList.length - 1]
+                .quote,
             author: state
                     .quoteList[state.currentIndex ?? state.quoteList.length - 1]
                     .author ??
@@ -155,7 +154,8 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
     Emitter<QuoteDataState> emit,
   ) async {
     try {
-      emit(state.copyWith(apiStatus: APIStatus.loading));
+      emit(state.copyWith(status: QuoteStateStatus.loading));
+      final currentUserUid = firebaseAuthInstance.currentUser?.uid;
       final userDocSnapshot =
           await db.collection('users').doc(currentUserUid).get();
       final quoteQuerySnapshot = db.collection('motivational_quotes');
@@ -170,7 +170,7 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
       }
       emit(
         state.copyWith(
-          status: QuoteStateStatus.favouriteListLoaded,
+          status: QuoteStateStatus.loaded,
           favouriteQuoteList: quoteList,
         ),
       );
@@ -184,6 +184,7 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
     Emitter<QuoteDataState> emit,
   ) async {
     try {
+      final currentUserUid = firebaseAuthInstance.currentUser?.uid;
       await db.collection('users').doc(currentUserUid).update(
         {
           'favourite_quote_id': FieldValue.arrayUnion(
@@ -202,6 +203,8 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
     Emitter<QuoteDataState> emit,
   ) async {
     try {
+      final currentUserUid = firebaseAuthInstance.currentUser?.uid;
+
       await db.collection('users').doc(currentUserUid).update(
         {
           'favourite_quote_id': FieldValue.arrayRemove(
@@ -220,6 +223,8 @@ class QuoteDataBloc extends Bloc<QuoteDataEvent, QuoteDataState> {
     Emitter<QuoteDataState> emit,
   ) async {
     try {
+      final currentUserUid = firebaseAuthInstance.currentUser?.uid;
+
       final userDocSnapshot =
           await db.collection('users').doc(currentUserUid).get();
       final favouriteQuoteDocIdList =

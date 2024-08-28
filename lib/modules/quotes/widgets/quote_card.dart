@@ -19,8 +19,7 @@ class _QuoteCardState extends State<QuoteCard> {
       builder: (context, state) {
         if (state.apiStatus == APIStatus.loading) {
           return const Center(child: CircularProgressIndicator());
-        } else if (state.status == QuoteStateStatus.quoteListLoaded ||
-            state.status == QuoteStateStatus.copiedSuccessfully) {
+        } else if (state.apiStatus == APIStatus.loaded) {
           return Container(
             margin: const EdgeInsets.symmetric(horizontal: 8),
             alignment: Alignment.center,
@@ -44,7 +43,7 @@ class _QuoteCardState extends State<QuoteCard> {
                     ),
                     const SizedBox(height: 50),
                     Text(
-                      state.quoteList[widget.index].quote ?? '',
+                      state.quoteList[widget.index].quote,
                       textAlign: TextAlign.center,
                       style: const TextStyle(fontSize: 20, color: Colors.white),
                     ),

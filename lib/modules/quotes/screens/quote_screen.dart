@@ -57,7 +57,9 @@ class _QuoteScreenState extends State<QuoteScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return BlocListener<QuoteDataBloc, QuoteDataState>(
-      listenWhen: (previous, current) => previous.status != current.status,
+      listenWhen: (previous, current) =>
+          previous.status != current.status ||
+          previous.apiStatus != current.apiStatus,
       listener: (context, state) {
         if (state.apiStatus == APIStatus.error) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -104,8 +106,8 @@ class _QuoteScreenState extends State<QuoteScreen> {
                   child: CarouselSlider(
                     items: List<QuoteCard>.generate(
                       state.quoteList.length,
-                      (int) {
-                        return QuoteCard(index: int);
+                      (index) {
+                        return QuoteCard(index: index);
                       },
                     ),
                     options: CarouselOptions(

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quotes_app/modules/admin-quote-list/bloc/admin_quote_list_bloc.dart';
 
 class UpdateBottomSheetWidget extends StatefulWidget {
   const UpdateBottomSheetWidget({

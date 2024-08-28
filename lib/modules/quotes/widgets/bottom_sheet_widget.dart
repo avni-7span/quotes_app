@@ -10,39 +10,48 @@ class BottomSheetWidget extends StatefulWidget {
     super.key,
     required ScreenshotController screenshotController,
     required void Function() onClosedTap,
-    // required bool isFavourite,
   })  : _onClosedTap = onClosedTap,
         _screenshotController = screenshotController;
 
   final ScreenshotController _screenshotController;
   final VoidCallback _onClosedTap;
 
-  // final bool isFavourite = false;
-
   @override
   State<BottomSheetWidget> createState() => _BottomSheetWidgetState();
 }
 
 class _BottomSheetWidgetState extends State<BottomSheetWidget> {
-  // bool isBookMarked = false;
   final currentUser = FirebaseAuth.instance.currentUser;
+  bool isFavourite = false;
 
   @override
   void initState() {
     super.initState();
-    // isBookMarked = widget.isFavourite;
+    checkIsFavourite(context.read<QuoteDataBloc>().state.currentIndex ??
+        context.read<QuoteDataBloc>().state.quoteList.length - 1);
   }
 
   final db = FirebaseFirestore.instance;
 
-  Icon iconData(listOfFavID, docId) {
-    if (listOfFavID == null) {
-      return const Icon(Icons.bookmark_outline);
+  Future<void> checkIsFavourite(int currentIndex) async {
+    final docId =
+        context.read<QuoteDataBloc>().state.quoteList[currentIndex].docID;
+    final userDocSnapshot =
+        await db.collection('users').doc(currentUser?.uid).get();
+    final idList = userDocSnapshot.data()?['favourite_quote_id'];
+    if (idList == null) {
+      setState(() {
+        isFavourite = false;
+      });
     } else {
-      if (listOfFavID.contains(docId)) {
-        return const Icon(Icons.bookmark);
+      if (idList.contains(docId)) {
+        setState(() {
+          isFavourite = true;
+        });
       } else {
-        return const Icon(Icons.bookmark_outline);
+        setState(() {
+          isFavourite = false;
+        });
       }
     }
   }
@@ -109,14 +118,19 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                    onPressed: () {
+                    onPressed: () async {
                       final quoteToHandle = state.quoteList[
                           state.currentIndex ?? state.quoteList.length - 1];
                       context
                           .read<QuoteDataBloc>()
                           .add(HandleBookMarkEvent(quote: quoteToHandle));
+                      setState(() {
+                        isFavourite = !isFavourite;
+                      });
                     },
-                    icon: const Icon(Icons.book_outlined)),
+                    icon: isFavourite
+                        ? const Icon(Icons.bookmark)
+                        : const Icon(Icons.bookmark_outline)),
                 const Text(
                   'Favourite',
                   maxLines: 2,

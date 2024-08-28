@@ -53,8 +53,6 @@ class AdminQuoteBloc extends Bloc<AdminQuoteEvent, AdminQuoteState> {
             .doc(quoteDocId)
             .update({'doc_id': quoteDocId});
         emit(state.copyWith(status: AdminQuoteStateStatus.success));
-      } else {
-        emit(state.copyWith(status: AdminQuoteStateStatus.failure));
       }
     } catch (e) {
       emit(state.copyWith(status: AdminQuoteStateStatus.failure));

@@ -6,7 +6,9 @@ enum LoginStateStatus {
   success,
   failure,
   notVerified,
-  emailSent
+  emailSent,
+  emailChanging,
+  passwordChanging,
 }
 
 class LoginState extends Equatable {

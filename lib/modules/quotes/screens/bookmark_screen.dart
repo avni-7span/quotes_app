@@ -49,17 +49,21 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
         ),
         body: BlocBuilder<QuoteDataBloc, QuoteDataState>(
           builder: (context, state) {
-            if (state.apiStatus == APIStatus.loading) {
+            if (state.status == QuoteStateStatus.loading) {
               return const Center(child: CircularProgressIndicator());
-            } else if (state.status == QuoteStateStatus.favouriteListLoaded &&
+            } else if (state.apiStatus == APIStatus.loaded &&
                 state.favouriteQuoteList.isEmpty) {
-              return const Center(
-                child: Text(
-                  'You have not favourite any quotes yet',
-                  style: TextStyle(fontSize: 20),
+              return const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Center(
+                  child: Text(
+                    textAlign: TextAlign.center,
+                    'You have not favourite any quotes yet.',
+                    style: TextStyle(fontSize: 23),
+                  ),
                 ),
               );
-            } else if (state.status == QuoteStateStatus.favouriteListLoaded &&
+            } else if (state.status == QuoteStateStatus.loaded &&
                 state.favouriteQuoteList.isNotEmpty) {
               return ListView.builder(
                 itemCount: state.favouriteQuoteList.length,

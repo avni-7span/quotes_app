@@ -95,6 +95,7 @@ class AdminQuoteListBloc
           docID: event.docID,
         ),
       );
+      add(const FetchAdminQuoteListEvent());
       emit(
         state.copyWith(
           status: AdminQuoteListStateStatus.edited,
@@ -123,11 +124,13 @@ class AdminQuoteListBloc
           .doc(event.quoteDocId)
           .delete();
 
+      /// Good practice to have list like this; as we should not manipulate state directly.
       final adminQuoteList = List.of(state.adminQuoteList);
 
       adminQuoteList.removeWhere(
         (element) => element.docID == event.quoteDocId,
       );
+      add(const FetchAdminQuoteListEvent());
       emit(
         state.copyWith(
           status: AdminQuoteListStateStatus.deleted,

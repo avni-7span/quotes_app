@@ -29,21 +29,18 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isVisible = true;
   static const TextStyle textStyle = TextStyle(fontSize: 20);
 
-  Future showUserVerificationAlertDialogue(
-      {required BuildContext context}) async {
-    showDialog(
+  Future<void> showUserVerificationAlertDialogue() async {
+    return showDialog(
       context: context,
-      useRootNavigator: true,
-      builder: (_) {
-        return VerificationAlertWidget(
-          onResendEmailVerificationTap: () {
-            context.read<LoginBloc>().add(const SendVerificationEmail());
-          },
-          onClosedTap: () {
-            Navigator.pop(context);
-          },
-        );
-      },
+      // useRootNavigator: true,
+      builder: (ctx) => VerificationAlertWidget(
+        onResendEmailVerificationTap: () {
+          context.read<LoginBloc>().add(const SendVerificationEmail());
+        },
+        onClosedTap: () {
+          context.maybePop();
+        },
+      ),
     );
   }
 
@@ -54,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (state.status == LoginStateStatus.success) {
           await context.replaceRoute(const QuoteRoute());
         } else if (state.status == LoginStateStatus.notVerified) {
-          showUserVerificationAlertDialogue(context: context);
+          showUserVerificationAlertDialogue();
         } else if (state.status == LoginStateStatus.emailSent) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(

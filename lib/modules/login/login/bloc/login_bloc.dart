@@ -25,7 +25,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     EmailFieldChangeEvent event,
     Emitter<LoginState> emit,
   ) {
-    emit(state.copyWith(status: LoginStateStatus.loading));
+    emit(state.copyWith(status: LoginStateStatus.emailChanging));
     final email = Email.dirty(event.email);
     emit(
       state.copyWith(
@@ -39,7 +39,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     PasswordFieldChangeEvent event,
     Emitter<LoginState> emit,
   ) {
-    emit(state.copyWith(status: LoginStateStatus.loading));
+    emit(state.copyWith(status: LoginStateStatus.passwordChanging));
     final password = Field.dirty(event.password);
     emit(
       state.copyWith(
@@ -93,8 +93,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       } catch (e) {
         emit(state.copyWith(status: LoginStateStatus.failure));
       }
-    } else {
-      emit(state.copyWith(status: LoginStateStatus.failure));
     }
   }
 
