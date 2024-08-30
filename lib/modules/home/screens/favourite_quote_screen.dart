@@ -3,26 +3,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quotes_app/core/constants/colors.dart';
 import 'package:quotes_app/core/routes/router/router.gr.dart';
+import 'package:quotes_app/core/widgets/custom_elevated_button.dart';
+import 'package:quotes_app/core/widgets/list_view_card.dart';
 import 'package:quotes_app/modules/home/bloc/quote_data_bloc.dart';
 
 @RoutePage()
-class BookmarkScreen extends StatefulWidget implements AutoRouteWrapper {
-  const BookmarkScreen({super.key});
+class FavouriteQuoteScreen extends StatefulWidget implements AutoRouteWrapper {
+  const FavouriteQuoteScreen({super.key});
 
   @override
-  State<BookmarkScreen> createState() => _BookmarkScreenState();
+  State<FavouriteQuoteScreen> createState() => _FavouriteQuoteScreenState();
 
   @override
   Widget wrappedRoute(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          QuoteBloc()..add(const FetchListOfFavouriteQuoteEvent()),
+      create: (context) => QuoteBloc()
+        ..add(
+          const FetchListOfFavouriteQuoteEvent(),
+        ),
       child: this,
     );
   }
 }
 
-class _BookmarkScreenState extends State<BookmarkScreen> {
+class _FavouriteQuoteScreenState extends State<FavouriteQuoteScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<QuoteBloc, QuoteState>(
@@ -43,15 +47,19 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
             style: TextStyle(color: Colors.black),
           ),
           leading: IconButton(
-              onPressed: () => context.replaceRoute(const HomeRoute()),
-              icon: const Icon(Icons.arrow_back)),
+            onPressed: () async {
+              await context.router
+                  .replaceAll([const HomeRoute()], updateExistingRoutes: false);
+            },
+            icon: const Icon(Icons.arrow_back),
+          ),
           backgroundColor: ColorPallet.lotusPink,
         ),
         body: BlocBuilder<QuoteBloc, QuoteState>(
           builder: (context, state) {
             if (state.status == QuoteStateStatus.loading) {
               return const Center(child: CircularProgressIndicator());
-            } else if (state.apiStatus == APIStatus.loaded &&
+            } else if (state.status == QuoteStateStatus.loaded &&
                 state.favouriteQuoteList.isEmpty) {
               return const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20),
@@ -68,48 +76,27 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
               return ListView.builder(
                 itemCount: state.favouriteQuoteList.length,
                 itemBuilder: (context, index) {
-                  return Card(
-                    margin: const EdgeInsets.all(15),
-                    shadowColor: Colors.black,
-                    color: Colors.white,
-                    elevation: 10,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            state.favouriteQuoteList[index].quote,
-                            style: const TextStyle(fontSize: 20),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            '- ${state.favouriteQuoteList[index].author}',
-                            style: const TextStyle(fontSize: 20),
-                          ),
-                          const SizedBox(height: 10),
-                          ElevatedButton(
-                              onPressed: () {
-                                final docID =
-                                    state.favouriteQuoteList[index].docID;
-                                context.read<QuoteBloc>().add(
-                                      RemoveFromFavouriteEvent(docID: docID),
-                                    );
-                              },
-                              child: const Text('remove from favourite'))
-                        ],
-                      ),
-                    ),
+                  return ListViewCard(
+                    quote: state.favouriteQuoteList[index].quote,
+                    author: state.favouriteQuoteList[index].author ?? '',
+                    crudButtonWidget: CustomElevatedButton(
+                        onPressed: () {
+                          context.read<QuoteBloc>().add(
+                              RemoveQuoteFromFavouriteList(
+                                  docID:
+                                      state.favouriteQuoteList[index].docID));
+                        },
+                        buttonLabel: 'Remove From Favourite'),
                   );
                 },
               );
             } else {
               return const Center(
-                  child: Text(
-                'Could not fetch data',
-                style: TextStyle(fontSize: 20),
-              ));
+                child: Text(
+                  'Could not load list',
+                  style: TextStyle(fontSize: 20),
+                ),
+              );
             }
           },
         ),

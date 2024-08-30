@@ -6,8 +6,8 @@ import 'package:quotes_app/core/validators/email_validator.dart';
 import 'package:quotes_app/core/widgets/custom_material_button.dart';
 import 'package:quotes_app/core/widgets/email_text_field.dart';
 import 'package:quotes_app/core/widgets/password_text_field.dart';
-import 'package:quotes_app/modules/login/login/bloc/login_bloc.dart';
-import 'package:quotes_app/modules/login/login/widgets/verification_alert_widget.dart';
+import 'package:quotes_app/modules/auth/login/login/bloc/login_bloc.dart';
+import 'package:quotes_app/modules/auth/login/login/widgets/verification_alert_widget.dart';
 
 @RoutePage()
 class LoginScreen extends StatefulWidget implements AutoRouteWrapper {
@@ -26,20 +26,15 @@ class LoginScreen extends StatefulWidget implements AutoRouteWrapper {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  bool isVisible = true;
   static const TextStyle textStyle = TextStyle(fontSize: 20);
 
   Future<void> showUserVerificationAlertDialogue() async {
     return showDialog(
       context: context,
-      // useRootNavigator: true,
       builder: (ctx) => VerificationAlertWidget(
-        onResendEmailVerificationTap: () {
-          context.read<LoginBloc>().add(const SendVerificationEmail());
-        },
-        onClosedTap: () {
-          context.maybePop();
-        },
+        onResendEmailVerificationTap: () =>
+            context.read<LoginBloc>().add(const SendVerificationEmailEvent()),
+        onClosedTap: () => context.maybePop(),
       ),
     );
   }
@@ -49,14 +44,15 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocListener<LoginBloc, LoginState>(
       listener: (context, state) async {
         if (state.status == LoginStateStatus.success) {
-          await context.replaceRoute(const HomeRoute());
+          await context.router.replaceAll([const HomeRoute()]);
         } else if (state.status == LoginStateStatus.notVerified) {
-          showUserVerificationAlertDialogue();
+          await showUserVerificationAlertDialogue();
         } else if (state.status == LoginStateStatus.emailSent) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text(
-                  'We have send you verification email; Please check inbox'),
+                'We have send you verification email; Please check inbox',
+              ),
             ),
           );
         } else if (state.status == LoginStateStatus.failure) {
@@ -79,17 +75,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Image.asset(
-                          'assets/quote.png',
-                          height: 80,
-                        ),
+                        Image.asset('assets/quote.png', height: 80),
                         const SizedBox(height: 20),
                         const Text(
                           'Welcome Again!',
                           style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold),
+                            color: Colors.black,
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 30),
                         EmailTextField(
@@ -100,15 +94,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                       EmailValidationError.invalid
                                   ? 'Invalid Email'
                                   : null,
-                          onChangedFunction: (value) =>
-                              context.read<LoginBloc>().add(
-                                    EmailFieldChangeEvent(value),
-                                  ),
+                          onChanged: (value) => context.read<LoginBloc>().add(
+                                EmailFieldChangeEvent(value),
+                              ),
                         ),
                         const SizedBox(height: 20),
                         PasswordTextField(
                           label: 'Enter Password',
-                          isVisible: isVisible,
                           onChanged: (value) => context
                               .read<LoginBloc>()
                               .add(PasswordFieldChangeEvent(value)),

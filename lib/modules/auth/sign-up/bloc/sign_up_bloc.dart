@@ -16,14 +16,14 @@ part 'sign_up_state.dart';
 
 class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   SignUpBloc() : super(const SignUpState()) {
-    on<EmailChangeEvent>(_checkEmail);
-    on<PasswordChangeEvent>(_checkPassword);
+    on<EmailChangeEvent>(_onEmailChanged);
+    on<PasswordChangeEvent>(_onPasswordChanged);
     on<ConfirmPasswordChangeEvent>(_checkConfirmPassword);
-    on<AdminCheckEvent>(checkAdmin);
-    on<SignUpButtonPressed>(signUpAndSendVerificationEmail);
+    on<ToggleAdminEvent>(_onToggleAdmin);
+    on<SignUpButtonPressed>(_signUpAndSendVerificationEmail);
   }
 
-  void _checkEmail(
+  void _onEmailChanged(
     EmailChangeEvent event,
     Emitter<SignUpState> emit,
   ) {
@@ -36,7 +36,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     );
   }
 
-  void _checkPassword(
+  void _onPasswordChanged(
     PasswordChangeEvent event,
     Emitter<SignUpState> emit,
   ) {
@@ -63,16 +63,11 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     );
   }
 
-  void checkAdmin(
-    AdminCheckEvent event,
-    Emitter<SignUpState> emit,
-  ) {
-    emit(
-      state.copyWith(isAdmin: event.isAdmin),
-    );
+  void _onToggleAdmin(ToggleAdminEvent event, Emitter<SignUpState> emit) {
+    emit(state.copyWith(isAdmin: event.isAdmin));
   }
 
-  Future<void> signUpAndSendVerificationEmail(
+  Future<void> _signUpAndSendVerificationEmail(
     SignUpButtonPressed event,
     Emitter<SignUpState> emit,
   ) async {
@@ -91,8 +86,12 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     if (state.isValid) {
       try {
         emit(state.copyWith(status: SignUpStateStatus.loading));
+
         final user = await AuthenticationRepository().signUpWithEmailPassword(
-            email: state.email.value, password: state.password.value);
+          email: state.email.value,
+          password: state.password.value,
+        );
+
         await FirebaseFirestore.instance
             .collection('users')
             .doc(user.user?.uid)
@@ -102,7 +101,9 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
           'isAdmin': state.isAdmin,
           'favourite_quote_id': []
         });
-        await AuthenticationRepository().sendVerificationEmail();
+
+        await AuthenticationRepository.instance.sendVerificationEmail();
+
         emit(state.copyWith(status: SignUpStateStatus.success));
       } on FirebaseException catch (e) {
         emit(

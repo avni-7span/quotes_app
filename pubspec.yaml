@@ -41,7 +41,6 @@ dependencies:
   equatable: ^2.0.5
   firebase_auth: ^5.1.4
   formz: ^0.7.0
-  carousel_slider: ^5.0.0
   auto_route: ^9.2.0
   screenshot: ^3.0.0
   share_plus: ^10.0.0

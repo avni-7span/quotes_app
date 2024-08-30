@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quotes_app/core/model/quote-data-model/quotes_model.dart';
 import 'package:quotes_app/modules/home/bloc/quote_data_bloc.dart';
+import 'package:quotes_app/modules/home/widgets/custom_container_quote_card.dart';
 
 class QuoteCard extends StatefulWidget {
   const QuoteCard({super.key, required this.index});
@@ -12,54 +14,48 @@ class QuoteCard extends StatefulWidget {
 }
 
 class _QuoteCardState extends State<QuoteCard> {
+  bool _checkIsFavourite({
+    required List<QuoteModel> favQuoteList,
+    required String currentQuoteDocId,
+  }) {
+    List<String> list = [];
+    for (QuoteModel quote in favQuoteList) {
+      list.add(quote.docID);
+    }
+    if (list.contains(currentQuoteDocId)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return BlocBuilder<QuoteBloc, QuoteState>(
       builder: (context, state) {
         if (state.apiStatus == APIStatus.loading) {
           return const Center(child: CircularProgressIndicator());
         } else if (state.apiStatus == APIStatus.loaded) {
-          return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 8),
-            alignment: Alignment.center,
-            height: size.height - 200,
-            width: size.width - 40,
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.7),
-              borderRadius: BorderRadius.circular(40),
+          return CustomContainerQuoteCard(
+            quote: state.quoteList[widget.index].quote,
+            author: '- ${state.quoteList[widget.index].author}',
+            isFavourite: _checkIsFavourite(
+              favQuoteList: state.favouriteQuoteList,
+              currentQuoteDocId: state.quoteList[widget.index].docID,
             ),
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      'assets/quote.png',
-                      height: 70,
-                      color: Colors.white,
-                    ),
-                    const SizedBox(height: 50),
-                    Text(
-                      state.quoteList[widget.index].quote,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 20, color: Colors.white),
-                    ),
-                    const SizedBox(height: 50),
-                    Text(
-                      '- ${state.quoteList[widget.index].author}',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 20, color: Colors.white),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            onBookmarkTap: () {
+              context.read<QuoteBloc>().add(
+                    const HandleBookmarkEvent(),
+                  );
+            },
           );
         } else {
-          return const Center(child: Text('Could Not Fetch Data.'));
+          return const Center(
+            child: Text(
+              'Could Not Load Quotes!',
+              style: TextStyle(color: Colors.black, fontSize: 30),
+            ),
+          );
         }
       },
     );

@@ -4,21 +4,22 @@ class QuoteModel extends Equatable {
   const QuoteModel({
     required this.quote,
     required this.docID,
-    required this.createdBy,
+    this.createdBy,
     this.author,
   });
 
   final String quote;
   final String? author;
   final String docID;
-  final String createdBy;
+  final String? createdBy;
 
   factory QuoteModel.fromFireStore(Map<String, dynamic> data) {
     return QuoteModel(
-        quote: data['quote'],
-        author: data['author'],
-        docID: data['doc_id'],
-        createdBy: data['created_by']);
+      quote: data['quote'],
+      author: data['author'],
+      docID: data['doc_id'],
+      createdBy: data['created_by'],
+    );
   }
 
   static Map<String, dynamic> toFireStore(QuoteModel quote) {

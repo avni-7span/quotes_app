@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:quotes_app/core/authentication-repository/authentication_repository.dart';
 import 'package:quotes_app/core/model/quote-data-model/quotes_model.dart';
 import 'package:quotes_app/core/model/user-model/user_model.dart';
 import 'package:quotes_app/modules/home/widgets/screenshot_widget.dart';
@@ -27,12 +28,11 @@ class QuoteBloc extends Bloc<QuoteEvent, QuoteState> {
     on<FetchAdminDetailEvent>(_fetchAdminDetails);
     on<TakeScreenShotAndShareEvent>(_takeScreenShotAndShare);
     on<ShareAsTextEvent>(_shareAsText);
-    on<CopyQuoteToClipBoardEvent>(_copyQuoteToClipboard);
+    on<CopyQuoteToClipboardEvent>(_copyQuoteToClipboard);
     on<CurrentIndexChangeEvent>(_setCurrentIndex);
     on<FetchListOfFavouriteQuoteEvent>(_fetchListOfFavouriteQuote);
-    on<AddToFavouriteEvent>(_addToFavourite);
-    on<RemoveFromFavouriteEvent>(_removeFromFavourite);
-    on<HandleBookMarkEvent>(_handleBookMark);
+    on<HandleBookmarkEvent>(_handleBookMark);
+    on<RemoveQuoteFromFavouriteList>(_removeQuoteFromFavouriteList);
   }
 
   Future<void> _fetchQuoteData(
@@ -43,11 +43,9 @@ class QuoteBloc extends Bloc<QuoteEvent, QuoteState> {
       emit(state.copyWith(apiStatus: APIStatus.loading));
 
       final quoteDocSnapShot = await db.collection('motivational_quotes').get();
-      final quoteList = quoteDocSnapShot.docs
+      final shuffledQuoteList = quoteDocSnapShot.docs
           .map(
-            (e) => QuoteModel.fromFireStore(
-              e.data(),
-            ),
+            (e) => QuoteModel.fromFireStore(e.data()),
           )
           .toList()
         ..shuffle();
@@ -55,7 +53,7 @@ class QuoteBloc extends Bloc<QuoteEvent, QuoteState> {
       emit(
         state.copyWith(
           apiStatus: APIStatus.loaded,
-          quoteList: quoteList,
+          quoteList: shuffledQuoteList,
         ),
       );
     } catch (e) {
@@ -88,13 +86,8 @@ class QuoteBloc extends Bloc<QuoteEvent, QuoteState> {
         pixelRatio: 2.0,
         Material(
           child: ScreenshotWidget(
-            quote: state
-                .quoteList[state.currentIndex ?? state.quoteList.length - 1]
-                .quote,
-            author: state
-                    .quoteList[state.currentIndex ?? state.quoteList.length - 1]
-                    .author ??
-                '',
+            quote: state.quoteList[state.currentIndex ?? 0].quote,
+            author: state.quoteList[state.currentIndex ?? 0].author ?? '',
           ),
         ),
       );
@@ -116,7 +109,7 @@ class QuoteBloc extends Bloc<QuoteEvent, QuoteState> {
   ) async {
     try {
       await Share.share(
-        '"${state.quoteList[state.currentIndex ?? state.quoteList.length - 1].quote}" - ${state.quoteList[state.currentIndex ?? state.quoteList.length - 1].author}',
+        '"${state.quoteList[state.currentIndex ?? 0].quote}" - ${state.quoteList[state.currentIndex ?? 0].author}',
       );
     } catch (e) {
       emit(
@@ -126,14 +119,14 @@ class QuoteBloc extends Bloc<QuoteEvent, QuoteState> {
   }
 
   Future<void> _copyQuoteToClipboard(
-    CopyQuoteToClipBoardEvent event,
+    CopyQuoteToClipboardEvent event,
     Emitter<QuoteState> emit,
   ) async {
     try {
       await Clipboard.setData(
         ClipboardData(
           text:
-              '"${state.quoteList[state.currentIndex ?? state.quoteList.length - 1].quote}" - ${state.quoteList[state.currentIndex ?? state.quoteList.length - 1].author}',
+              '"${state.quoteList[state.currentIndex ?? 0].quote}" - ${state.quoteList[state.currentIndex ?? 0].author}',
         ),
       );
       emit(state.copyWith(
@@ -155,7 +148,7 @@ class QuoteBloc extends Bloc<QuoteEvent, QuoteState> {
   ) async {
     try {
       emit(state.copyWith(status: QuoteStateStatus.loading));
-      final currentUserUid = firebaseAuthInstance.currentUser?.uid;
+      final currentUserUid = AuthenticationRepository.instance.currentUser?.uid;
       final userDocSnapshot =
           await db.collection('users').doc(currentUserUid).get();
       final quoteQuerySnapshot = db.collection('motivational_quotes');
@@ -179,68 +172,81 @@ class QuoteBloc extends Bloc<QuoteEvent, QuoteState> {
     }
   }
 
-  Future<void> _addToFavourite(
-    AddToFavouriteEvent event,
-    Emitter<QuoteState> emit,
-  ) async {
-    try {
-      final currentUserUid = firebaseAuthInstance.currentUser?.uid;
-      await db.collection('users').doc(currentUserUid).update(
-        {
-          'favourite_quote_id': FieldValue.arrayUnion(
-            [event.docID],
-          ),
-        },
-      );
-      add(const FetchListOfFavouriteQuoteEvent());
-    } catch (e) {
-      emit(state.copyWith(apiStatus: APIStatus.error));
-    }
+  Future<void> removeFromFavouriteList({
+    required String? currentUserUid,
+    required String quoteDocId,
+  }) async {
+    final userDocumentReference = db.collection('users').doc(currentUserUid);
+    await userDocumentReference.update(
+      {
+        'favourite_quote_id': FieldValue.arrayRemove(
+          [quoteDocId],
+        ),
+      },
+    );
   }
 
-  Future<void> _removeFromFavourite(
-    RemoveFromFavouriteEvent event,
-    Emitter<QuoteState> emit,
-  ) async {
-    try {
-      final currentUserUid = firebaseAuthInstance.currentUser?.uid;
-
-      await db.collection('users').doc(currentUserUid).update(
-        {
-          'favourite_quote_id': FieldValue.arrayRemove(
-            [event.docID],
-          ),
-        },
-      );
-      add(const FetchListOfFavouriteQuoteEvent());
-    } catch (e) {
-      emit(state.copyWith(apiStatus: APIStatus.error));
-    }
+  Future<void> addToFavouriteList({
+    required String? currentUserUid,
+    required String quoteDocId,
+  }) async {
+    final userDocumentReference = db.collection('users').doc(currentUserUid);
+    await userDocumentReference.update(
+      {
+        'favourite_quote_id': FieldValue.arrayUnion(
+          [quoteDocId],
+        ),
+      },
+    );
   }
 
   Future<void> _handleBookMark(
-    HandleBookMarkEvent event,
+    HandleBookmarkEvent event,
     Emitter<QuoteState> emit,
   ) async {
     try {
-      final currentUserUid = firebaseAuthInstance.currentUser?.uid;
-
-      final userDocSnapshot =
-          await db.collection('users').doc(currentUserUid).get();
+      final currentUserUid = AuthenticationRepository.instance.currentUser?.uid;
+      final userDocumentReference = db.collection('users').doc(currentUserUid);
+      final userDocSnapshot = await userDocumentReference.get();
       final favouriteQuoteDocIdList =
           userDocSnapshot.data()?['favourite_quote_id'];
-      final quoteDocID = event.quote.docID;
+      final quoteDocId = state.quoteList[state.currentIndex ?? 0].docID;
       if (favouriteQuoteDocIdList != null) {
-        if (favouriteQuoteDocIdList.contains(quoteDocID)) {
-          add(RemoveFromFavouriteEvent(docID: quoteDocID));
+        if (favouriteQuoteDocIdList.contains(quoteDocId)) {
+          /// remove quote from list of favourites
+          await removeFromFavouriteList(
+            currentUserUid: currentUserUid,
+            quoteDocId: quoteDocId,
+          );
+          add(const FetchListOfFavouriteQuoteEvent());
         } else {
-          add(AddToFavouriteEvent(docID: quoteDocID));
+          /// add quote to list of favourites
+          await addToFavouriteList(
+            currentUserUid: currentUserUid,
+            quoteDocId: quoteDocId,
+          );
+          add(const FetchListOfFavouriteQuoteEvent());
         }
       } else {
-        add(AddToFavouriteEvent(docID: quoteDocID));
+        /// remove quote from list of favourites
+        await addToFavouriteList(
+          currentUserUid: currentUserUid,
+          quoteDocId: quoteDocId,
+        );
+        add(const FetchListOfFavouriteQuoteEvent());
       }
     } catch (e) {
       emit(state.copyWith(apiStatus: APIStatus.error));
     }
+  }
+
+  Future<void> _removeQuoteFromFavouriteList(
+    RemoveQuoteFromFavouriteList event,
+    Emitter<QuoteState> emit,
+  ) async {
+    final currentUserUid = AuthenticationRepository.instance.currentUser?.uid;
+    await removeFromFavouriteList(
+        currentUserUid: currentUserUid, quoteDocId: event.docID);
+    add(const FetchListOfFavouriteQuoteEvent());
   }
 }

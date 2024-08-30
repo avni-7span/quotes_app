@@ -13,17 +13,25 @@ class AuthenticationRepository {
 
   firebase_auth.User? get currentUser => _firebaseAuth.currentUser;
 
-  Future<firebase_auth.UserCredential> loginWithEmailPassword(
-      {required String email, required String password}) async {
+  Future<firebase_auth.UserCredential> loginWithEmailPassword({
+    required String email,
+    required String password,
+  }) async {
     final user = await _firebaseAuth.signInWithEmailAndPassword(
-        email: email, password: password);
+      email: email,
+      password: password,
+    );
     return user;
   }
 
-  Future<firebase_auth.UserCredential> signUpWithEmailPassword(
-      {required String email, required String password}) async {
+  Future<firebase_auth.UserCredential> signUpWithEmailPassword({
+    required String email,
+    required String password,
+  }) async {
     final user = await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email, password: password);
+      email: email,
+      password: password,
+    );
     return user;
   }
 

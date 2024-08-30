@@ -23,7 +23,9 @@ class _VerificationWaitingScreenState extends State<VerificationWaitingScreen> {
 
   Future<void> checkRoute() async {
     await Future.delayed(const Duration(seconds: 6));
-    await context.replaceRoute(const LoginRoute());
+    if (mounted) {
+      await context.replaceRoute(const LoginRoute());
+    }
   }
 
   @override

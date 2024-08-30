@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quotes_app/core/constants/colors.dart';
@@ -22,7 +21,8 @@ class HomeScreen extends StatefulWidget implements AutoRouteWrapper {
     return BlocProvider(
       create: (context) => QuoteBloc()
         ..add(const FetchQuoteDataEvent())
-        ..add(const FetchAdminDetailEvent()),
+        ..add(const FetchAdminDetailEvent())
+        ..add(const FetchListOfFavouriteQuoteEvent()),
       child: this,
     );
   }
@@ -30,9 +30,9 @@ class HomeScreen extends StatefulWidget implements AutoRouteWrapper {
 
 class _HomeScreenState extends State<HomeScreen> {
   final ScreenshotController _screenshotController = ScreenshotController();
-  final bool isFavourite = false;
+  final PageController _pageController = PageController();
 
-  Future _showBottomSheet(BuildContext sheetContext) {
+  Future<void> _showBottomSheet(BuildContext sheetContext) {
     return showModalBottomSheet(
       context: sheetContext,
       useRootNavigator: true,
@@ -42,10 +42,8 @@ class _HomeScreenState extends State<HomeScreen> {
           value: BlocProvider.of<QuoteBloc>(sheetContext),
           child: BottomSheetWidget(
             screenshotController: _screenshotController,
-            // isFavourite: isFavourite,
             onClosedTap: () {
               Navigator.pop(sheetContext);
-              // Navigator.pop(context);
             },
           ),
         );
@@ -53,9 +51,23 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   context.read<QuoteBloc>()
+  //     ..add(const FetchQuoteDataEvent())
+  //     ..add(const FetchAdminDetailEvent())
+  //     ..add(const FetchListOfFavouriteQuoteEvent());
+  // }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return BlocListener<QuoteBloc, QuoteState>(
       listenWhen: (previous, current) =>
           previous.status != current.status ||
@@ -72,7 +84,6 @@ class _HomeScreenState extends State<HomeScreen> {
         if (state.status == QuoteStateStatus.copiedSuccessfully) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              behavior: SnackBarBehavior.floating,
               content: Text(
                 'Quote copied to clipboard.',
               ),
@@ -84,12 +95,14 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Scaffold(
         extendBodyBehindAppBar: true,
         appBar: AppBar(
-            title: const Text(
-              'Be What You Want To Be',
-              style: TextStyle(color: Colors.white),
-            ),
-            backgroundColor: Colors.transparent,
-            iconTheme: const IconThemeData(color: Colors.white)),
+          title: const Text(
+            'Be What You Want To Be',
+            style: TextStyle(color: Colors.white),
+          ),
+          // leading: const AutoLeadingButton(),
+          backgroundColor: Colors.transparent,
+          iconTheme: const IconThemeData(color: Colors.white),
+        ),
         drawer: const Drawer(
           child: DrawerListViewWidget(),
         ),
@@ -98,30 +111,28 @@ class _HomeScreenState extends State<HomeScreen> {
             Container(
                 decoration: const BoxDecoration(
                   image: DecorationImage(
-                      image: AssetImage('assets/bkg_pic.jpeg'),
-                      fit: BoxFit.cover),
+                    image: AssetImage('assets/bkg_pic.jpeg'),
+                    fit: BoxFit.cover,
+                  ),
                 ),
                 child: null),
             BlocBuilder<QuoteBloc, QuoteState>(
               builder: (context, state) {
                 return Align(
                   alignment: Alignment.center,
-                  child: CarouselSlider(
-                    items: List<QuoteCard>.generate(
+                  child: PageView(
+                    controller: _pageController,
+                    physics: const BouncingScrollPhysics(),
+                    scrollDirection: Axis.horizontal,
+                    onPageChanged: (index) {
+                      context.read<QuoteBloc>().add(
+                            CurrentIndexChangeEvent(index: index),
+                          );
+                    },
+                    children: List<QuoteCard>.generate(
                       state.quoteList.length,
                       (index) {
                         return QuoteCard(index: index);
-                      },
-                    ),
-                    options: CarouselOptions(
-                      height: size.height - 200,
-                      reverse: true,
-                      initialPage: 0,
-                      enableInfiniteScroll: false,
-                      onPageChanged: (index, _) {
-                        context
-                            .read<QuoteBloc>()
-                            .add(CurrentIndexChangeEvent(index: index));
                       },
                     ),
                   ),

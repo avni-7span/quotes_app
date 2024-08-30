@@ -9,8 +9,12 @@ class UserModel extends Equatable {
     required this.favouriteQuoteIdList,
   });
 
-  static const empty =
-      UserModel(id: '', email: '', isAdmin: false, favouriteQuoteIdList: []);
+  static const empty = UserModel(
+    id: '',
+    email: '',
+    isAdmin: false,
+    favouriteQuoteIdList: [],
+  );
 
   final String? email;
   final String? id;
@@ -18,13 +22,15 @@ class UserModel extends Equatable {
   final List<dynamic>? favouriteQuoteIdList;
 
   factory UserModel.fromFireStore(
-      DocumentSnapshot<Map<String, dynamic>> snapshot) {
+    DocumentSnapshot<Map<String, dynamic>> snapshot,
+  ) {
     final data = snapshot.data();
     return UserModel(
-        id: data?['id'],
-        email: data?['email'],
-        isAdmin: data?['isAdmin'],
-        favouriteQuoteIdList: data?['favourite_quote_id']);
+      id: data?['id'],
+      email: data?['email'],
+      isAdmin: data?['isAdmin'],
+      favouriteQuoteIdList: data?['favourite_quote_id'],
+    );
   }
 
   @override

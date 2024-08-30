@@ -23,7 +23,6 @@ class QuoteState extends Equatable {
     this.apiStatus = APIStatus.initial,
     this.quoteList = const [],
     this.user = UserModel.empty,
-    this.isFavourite = false,
 
     // TODO
     this.currentIndex,
@@ -36,7 +35,6 @@ class QuoteState extends Equatable {
   final UserModel user;
   final int? currentIndex;
   final List<QuoteModel> favouriteQuoteList;
-  final bool isFavourite;
 
   @override
   List<Object?> get props => [
@@ -46,7 +44,6 @@ class QuoteState extends Equatable {
         currentIndex,
         favouriteQuoteList,
         apiStatus,
-        isFavourite
       ];
 
   QuoteState copyWith({
@@ -56,7 +53,6 @@ class QuoteState extends Equatable {
     UserModel? user,
     int? currentIndex,
     List<QuoteModel>? favouriteQuoteList,
-    bool? isFavourite,
   }) {
     return QuoteState(
       status: status ?? this.status,
@@ -65,7 +61,6 @@ class QuoteState extends Equatable {
       user: user ?? this.user,
       currentIndex: currentIndex ?? this.currentIndex,
       favouriteQuoteList: favouriteQuoteList ?? this.favouriteQuoteList,
-      isFavourite: isFavourite ?? this.isFavourite,
     );
   }
 }

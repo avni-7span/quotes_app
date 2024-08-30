@@ -10,13 +10,17 @@ class AppRouter extends RootStackRouter {
   @override
   List<AutoRoute> get routes => [
         AutoRoute(page: SplashRoute.page, path: '/', initial: true),
-        AutoRoute(page: SignUpRoute.page),
-        AutoRoute(page: LoginRoute.page),
         AutoRoute(page: HomeRoute.page, guards: [AuthGuard()]),
+
+        /// Auth Module
+        AutoRoute(page: LoginRoute.page),
+        AutoRoute(page: SignUpRoute.page),
+        AutoRoute(page: ForgotPasswordRoute.page),
+        AutoRoute(page: VerificationWaitingRoute.page),
+
+        /// Quote Module
         AutoRoute(page: CreateQuoteRoute.page),
         AutoRoute(page: AdminQuoteListRoute.page),
-        AutoRoute(page: VerificationWaitingRoute.page),
-        AutoRoute(page: ForgotPasswordRoute.page),
-        AutoRoute(page: BookmarkRoute.page),
+        AutoRoute(page: FavouriteQuoteRoute.page),
       ];
 }

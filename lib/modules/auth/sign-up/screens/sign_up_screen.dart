@@ -9,7 +9,8 @@ import 'package:quotes_app/core/validators/password_validator.dart';
 import 'package:quotes_app/core/widgets/custom_material_button.dart';
 import 'package:quotes_app/core/widgets/email_text_field.dart';
 import 'package:quotes_app/core/widgets/password_text_field.dart';
-import 'package:quotes_app/modules/sign-up/bloc/sign_up_bloc.dart';
+import 'package:quotes_app/modules/auth/sign-up/app_checklist_tile.dart';
+import 'package:quotes_app/modules/auth/sign-up/bloc/sign_up_bloc.dart';
 
 @RoutePage()
 class SignUpScreen extends StatefulWidget implements AutoRouteWrapper {
@@ -28,9 +29,6 @@ class SignUpScreen extends StatefulWidget implements AutoRouteWrapper {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  bool _isChecked = false;
-  bool isPassVisible = true;
-  bool isConfirmPassVisible = true;
   static const TextStyle textStyle = TextStyle(fontSize: 20);
 
   @override
@@ -47,7 +45,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 content: Text(state.error),
               ),
             );
-            return;
           }
           if (state.status == SignUpStateStatus.success) {
             await context.replaceRoute(const VerificationWaitingRoute());
@@ -70,7 +67,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           Text(
                             'Welcome',
                             style: TextStyle(
-                                fontSize: 40, color: Colors.grey[700]),
+                              fontSize: 40,
+                              color: Colors.grey.shade700,
+                            ),
                           )
                         ],
                       ),
@@ -83,17 +82,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     EmailValidationError.invalid
                                 ? 'Invalid Email'
                                 : null,
-                        onChangedFunction: (value) =>
-                            context.read<SignUpBloc>().add(
-                                  EmailChangeEvent(value),
-                                ),
+                        onChanged: (value) => context.read<SignUpBloc>().add(
+                              EmailChangeEvent(value),
+                            ),
                       ),
                       const SizedBox(height: 20),
                       PasswordTextField(
                         label: 'Enter Password',
-                        onChanged: (value) => context
-                            .read<SignUpBloc>()
-                            .add(PasswordChangeEvent(value)),
+                        onChanged: (value) => context.read<SignUpBloc>().add(
+                              PasswordChangeEvent(value),
+                            ),
                         errorText: state.password.displayError ==
                                 PasswordValidationError.passEmpty
                             ? 'Password is required'
@@ -101,12 +99,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     PasswordValidationError.invalid
                                 ? ConstantStrings.passwordErrorText
                                 : null,
-                        isVisible: isPassVisible,
                       ),
                       const SizedBox(height: 20),
                       PasswordTextField(
                         label: 'Confirm Password',
-                        isVisible: isConfirmPassVisible,
                         onChanged: (value) => context
                             .read<SignUpBloc>()
                             .add(ConfirmPasswordChangeEvent(value)),
@@ -120,29 +116,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       const SizedBox(height: 60),
                       const Text(ConstantStrings.adminFeatureInfo),
-                      CheckboxListTile(
-                        secondary: const Icon(
-                          Icons.admin_panel_settings_outlined,
-                          size: 40,
-                        ),
-                        value: _isChecked,
-                        selected: _isChecked,
+                      AppCheckListTile(
+                        title: 'Sign up as Admin?',
                         onChanged: (value) {
-                          setState(() {
-                            _isChecked = value!;
-                          });
+                          context.read<SignUpBloc>().add(
+                                ToggleAdminEvent(value),
+                              );
                         },
-                        title: const Text(
-                          'Sign up as Admin?',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
                       ),
                       const SizedBox(height: 40),
                       CustomMaterialButton(
                         onPressed: () {
-                          context.read<SignUpBloc>().add(
-                                AdminCheckEvent(_isChecked),
-                              );
                           context.read<SignUpBloc>().add(
                                 const SignUpButtonPressed(),
                               );
@@ -158,7 +142,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(height: 20),
                       CustomMaterialButton(
                         onPressed: () async {
-                          await context.replaceRoute(const LoginRoute());
+                          await context.replaceRoute(
+                            const LoginRoute(),
+                          );
                         },
                         buttonLabelWidget: const Text(
                           'Login Into Existing Account ',

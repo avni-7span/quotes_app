@@ -34,28 +34,33 @@ class CreateQuoteBloc extends Bloc<CreateQuoteEvent, CreateQuoteState> {
         ),
       );
       if (state.isValid) {
-        emit(state.copyWith(status: CreateQuoteStateStatus.addQuote));
+        emit(
+          state.copyWith(status: CreateQuoteStateStatus.addQuote),
+        );
         if (event.author == '') {
           author = 'unknown';
         } else {
           author = event.author;
         }
-        final addedQuote = await fireStoreInstance
-            .collection('motivational_quotes')
-            .add({
+        final addedQuote =
+            await fireStoreInstance.collection('motivational_quotes').add({
           'quote': state.quote.value,
           'author': author,
-          'created_by': currentUser?.uid
+          'created_by': currentUser?.uid,
         });
         final quoteDocId = addedQuote.id;
         await fireStoreInstance
             .collection('motivational_quotes')
             .doc(quoteDocId)
             .update({'doc_id': quoteDocId});
-        emit(state.copyWith(status: CreateQuoteStateStatus.success));
+        emit(
+          state.copyWith(status: CreateQuoteStateStatus.success),
+        );
       }
     } catch (e) {
-      emit(state.copyWith(status: CreateQuoteStateStatus.failure));
+      emit(
+        state.copyWith(status: CreateQuoteStateStatus.failure),
+      );
     }
   }
 

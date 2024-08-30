@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quotes_app/core/constants/colors.dart';
 import 'package:quotes_app/core/routes/router/router.gr.dart';
 import 'package:quotes_app/modules/admin-quote-list/bloc/admin_quote_bloc.dart';
+import 'package:quotes_app/modules/admin-quote-list/widgets/custom_card.dart';
 import 'package:quotes_app/modules/admin-quote-list/widgets/delete_alert_dialogue.dart';
 import 'package:quotes_app/modules/admin-quote-list/widgets/update_bottom_sheet_widget.dart';
 
@@ -49,8 +50,6 @@ class _AdminQuoteListScreenState extends State<AdminQuoteListScreen> {
                   author: updatedAuthor,
                 ),
               );
-          // TODO
-          // ..add(const FetchAdminQuoteListEvent());
           ctx.maybePop();
         },
       ),
@@ -81,7 +80,10 @@ class _AdminQuoteListScreenState extends State<AdminQuoteListScreen> {
           style: TextStyle(color: Colors.black),
         ),
         leading: IconButton(
-          onPressed: () => context.replaceRoute(const HomeRoute()),
+          onPressed: () async {
+            await context.router
+                .replaceAll([const HomeRoute()], updateExistingRoutes: false);
+          },
           icon: const Icon(Icons.arrow_back),
         ),
         backgroundColor: ColorPallet.lotusPink,
@@ -104,53 +106,16 @@ class _AdminQuoteListScreenState extends State<AdminQuoteListScreen> {
                 child: ListView.builder(
                   itemCount: state.adminQuoteList.length,
                   itemBuilder: (context, index) {
-                    return Card(
-                      margin: const EdgeInsets.all(15),
-                      shadowColor: Colors.black,
-                      color: Colors.white,
-                      elevation: 10,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              state.adminQuoteList[index].quote,
-                              style: const TextStyle(fontSize: 20),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              '- ${state.adminQuoteList[index].author}',
-                              style: const TextStyle(fontSize: 20),
-                            ),
-                            const SizedBox(height: 10),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                ElevatedButton(
-                                    onPressed: () => showQuoteUpdateBottomSheet(
-                                          docID:
-                                              state.adminQuoteList[index].docID,
-                                          quote:
-                                              state.adminQuoteList[index].quote,
-                                          author: state.adminQuoteList[index]
-                                                  .author ??
-                                              '',
-                                        ),
-                                    child: const Text('Edit quote')),
-                                ElevatedButton(
-                                    onPressed: () {
-                                      showDeleteQuoteAlertDialogue(
-                                        quoteDocId:
-                                            state.adminQuoteList[index].docID,
-                                      );
-                                    },
-                                    child: const Text('Delete quote'))
-                              ],
-                            )
-                          ],
-                        ),
+                    return CustomCard(
+                      quote: state.adminQuoteList[index].quote,
+                      author: '- ${state.adminQuoteList[index].author}',
+                      onEditPressed: () => showQuoteUpdateBottomSheet(
+                        docID: state.adminQuoteList[index].docID,
+                        quote: state.adminQuoteList[index].quote,
+                        author: state.adminQuoteList[index].author ?? '',
+                      ),
+                      onDeletePressed: () => showDeleteQuoteAlertDialogue(
+                        quoteDocId: state.adminQuoteList[index].docID,
                       ),
                     );
                   },
@@ -164,7 +129,7 @@ class _AdminQuoteListScreenState extends State<AdminQuoteListScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'You have not uploaded any quotes yet.',
+                        'You have not created any quotes yet.',
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 25),
                       ),

@@ -5,29 +5,27 @@ import 'package:quotes_app/core/constants/const_strings.dart';
 import 'package:quotes_app/core/validators/email_validator.dart';
 import 'package:quotes_app/core/widgets/custom_material_button.dart';
 import 'package:quotes_app/core/widgets/email_text_field.dart';
-import 'package:quotes_app/modules/login/forgot-password/bloc/forgot_password_bloc.dart';
+import 'package:quotes_app/modules/auth/login/forgot-password/bloc/forgot_password_bloc.dart';
 
 @RoutePage()
-class ForgotPasswordScreen extends StatefulWidget implements AutoRouteWrapper {
+class ForgotPasswordScreen extends StatelessWidget implements AutoRouteWrapper {
   const ForgotPasswordScreen({super.key});
 
   @override
-  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
-
-  @override
   Widget wrappedRoute(BuildContext context) {
-    return BlocProvider(create: (context) => ForgotPasswordBloc(), child: this);
+    return BlocProvider(
+      create: (context) => ForgotPasswordBloc(),
+      child: this,
+    );
   }
-}
 
-class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
       appBar: AppBar(
-        title: const Text('Recover Password'),
-        backgroundColor: Colors.blue[200],
+        title: const Text('Forgot Password'),
+        backgroundColor: Colors.blue.shade200,
       ),
       body: Center(
         child: Padding(
@@ -45,6 +43,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                     const SizedBox(height: 40),
                     EmailTextField(
+                      onChanged: (value) {
+                        context
+                            .read<ForgotPasswordBloc>()
+                            .add(EmailFieldChangeEvent(value));
+                      },
                       errorText:
                           state.email.displayError == EmailValidationError.empty
                               ? 'Email is required'
@@ -52,11 +55,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                       EmailValidationError.invalid
                                   ? 'Invalid Email'
                                   : null,
-                      onChangedFunction: (value) {
-                        context.read<ForgotPasswordBloc>().add(
-                              EmailFieldChangeEvent(value),
-                            );
-                      },
                     ),
                     const SizedBox(height: 50),
                     CustomMaterialButton(

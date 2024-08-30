@@ -14,12 +14,14 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    checkRoute();
+    navigateToHomeScreen();
   }
 
-  Future<void> checkRoute() async {
+  Future<void> navigateToHomeScreen() async {
     await Future.delayed(const Duration(seconds: 3));
-    await context.replaceRoute(const HomeRoute());
+    if (mounted) {
+      await context.replaceRoute(const HomeRoute());
+    }
   }
 
   @override

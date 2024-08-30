@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
 class PasswordTextField extends StatefulWidget {
-  const PasswordTextField(
-      {super.key,
-      this.isVisible = true,
-      required this.onChanged,
-      required this.errorText,
-      required this.label});
+  const PasswordTextField({
+    super.key,
+    this.isVisible = true,
+    required this.onChanged,
+    required this.errorText,
+    required this.label,
+  });
 
   final bool isVisible;
   final Function(String) onChanged;

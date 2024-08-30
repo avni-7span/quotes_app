@@ -1,14 +1,14 @@
 part of 'admin_quote_bloc.dart';
 
-class AdminQuoteEvent extends Equatable {
+abstract class AdminQuoteEvent extends Equatable {
   const AdminQuoteEvent();
-
-  @override
-  List<Object?> get props => [];
 }
 
 class FetchAdminQuoteListEvent extends AdminQuoteEvent {
   const FetchAdminQuoteListEvent();
+
+  @override
+  List<Object?> get props => [];
 }
 
 class EditQuoteEvent extends AdminQuoteEvent {
@@ -21,10 +21,15 @@ class EditQuoteEvent extends AdminQuoteEvent {
   final String docID;
   final String quote;
   final String? author;
+
+  @override
+  List<Object?> get props => [docID, quote, author];
 }
 
 class DeleteQuoteEvent extends AdminQuoteEvent {
   const DeleteQuoteEvent({required this.quoteDocId});
 
   final String quoteDocId;
+  @override
+  List<Object?> get props => [quoteDocId];
 }

@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quotes_app/core/authentication-repository/authentication_repository.dart';
 
 part 'logout_event.dart';
+
 part 'logout_state.dart';
 
 class LogoutBloc extends Bloc<LogoutEvent, LogoutState> {
@@ -18,8 +19,12 @@ class LogoutBloc extends Bloc<LogoutEvent, LogoutState> {
       await AuthenticationRepository.instance.logOut();
       emit(state.copyWith(status: LogoutStateStatus.success));
     } catch (e) {
-      emit(state.copyWith(
-          status: LogoutStateStatus.failure, errorMessage: e.toString()));
+      emit(
+        state.copyWith(
+          status: LogoutStateStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 }

@@ -122,7 +122,7 @@ class AdminBloc extends Bloc<AdminQuoteEvent, AdminQuoteState> {
           .collection('motivational_quotes')
           .doc(event.quoteDocId)
           .delete();
-
+      
       /// Good practice to have list like this; as we should not manipulate state directly.
       final adminQuoteList = List.of(state.adminQuoteList);
 

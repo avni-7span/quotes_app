@@ -1,56 +1,74 @@
 part of 'quote_data_bloc.dart';
 
-class QuoteEvent extends Equatable {
+abstract class QuoteEvent extends Equatable {
   const QuoteEvent();
-  @override
-  List<Object?> get props => [];
 }
 
 class FetchQuoteDataEvent extends QuoteEvent {
   const FetchQuoteDataEvent();
+
+  @override
+  List<Object?> get props => [];
 }
 
 class FetchAdminDetailEvent extends QuoteEvent {
   const FetchAdminDetailEvent();
-}
 
-class GenerateSetOfRandomIntegerEvent extends QuoteEvent {
-  const GenerateSetOfRandomIntegerEvent();
+  @override
+  List<Object?> get props => [];
 }
 
 class TakeScreenShotAndShareEvent extends QuoteEvent {
   const TakeScreenShotAndShareEvent({required this.screenshotController});
+
   final ScreenshotController screenshotController;
+
+  @override
+  List<Object?> get props => [screenshotController];
 }
 
 class ShareAsTextEvent extends QuoteEvent {
   const ShareAsTextEvent();
+
+  @override
+  List<Object?> get props => [];
 }
 
-class CopyQuoteToClipBoardEvent extends QuoteEvent {
-  const CopyQuoteToClipBoardEvent();
+class CopyQuoteToClipboardEvent extends QuoteEvent {
+  const CopyQuoteToClipboardEvent();
+
+  @override
+  List<Object?> get props => [];
 }
 
 class CurrentIndexChangeEvent extends QuoteEvent {
   const CurrentIndexChangeEvent({required this.index});
-  final int? index;
+
+  final int index;
+
+  @override
+  List<Object?> get props => [index];
 }
 
 class FetchListOfFavouriteQuoteEvent extends QuoteEvent {
   const FetchListOfFavouriteQuoteEvent();
+
+  @override
+  List<Object?> get props => [];
 }
 
-class AddToFavouriteEvent extends QuoteEvent {
-  const AddToFavouriteEvent({required this.docID});
+class HandleBookmarkEvent extends QuoteEvent {
+  const HandleBookmarkEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class RemoveQuoteFromFavouriteList extends QuoteEvent {
+  const RemoveQuoteFromFavouriteList({required this.docID});
+
   final String docID;
-}
 
-class RemoveFromFavouriteEvent extends QuoteEvent {
-  const RemoveFromFavouriteEvent({required this.docID});
-  final String docID;
-}
-
-class HandleBookMarkEvent extends QuoteEvent {
-  const HandleBookMarkEvent({required this.quote});
-  final QuoteModel quote;
+  @override
+  List<Object?> get props => [docID];
 }
