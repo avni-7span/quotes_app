@@ -86,8 +86,8 @@ class QuoteBloc extends Bloc<QuoteEvent, QuoteState> {
         pixelRatio: 2.0,
         Material(
           child: ScreenshotWidget(
-            quote: state.quoteList[state.currentIndex ?? 0].quote,
-            author: state.quoteList[state.currentIndex ?? 0].author ?? '',
+            quote: state.quoteList[state.currentIndex].quote,
+            author: state.quoteList[state.currentIndex].author ?? '',
           ),
         ),
       );
@@ -109,7 +109,7 @@ class QuoteBloc extends Bloc<QuoteEvent, QuoteState> {
   ) async {
     try {
       await Share.share(
-        '"${state.quoteList[state.currentIndex ?? 0].quote}" - ${state.quoteList[state.currentIndex ?? 0].author}',
+        '"${state.quoteList[state.currentIndex].quote}" - ${state.quoteList[state.currentIndex].author}',
       );
     } catch (e) {
       emit(
@@ -126,7 +126,7 @@ class QuoteBloc extends Bloc<QuoteEvent, QuoteState> {
       await Clipboard.setData(
         ClipboardData(
           text:
-              '"${state.quoteList[state.currentIndex ?? 0].quote}" - ${state.quoteList[state.currentIndex ?? 0].author}',
+              '"${state.quoteList[state.currentIndex].quote}" - ${state.quoteList[state.currentIndex].author}',
         ),
       );
       emit(state.copyWith(
@@ -210,7 +210,7 @@ class QuoteBloc extends Bloc<QuoteEvent, QuoteState> {
       final userDocSnapshot = await userDocumentReference.get();
       final favouriteQuoteDocIdList =
           userDocSnapshot.data()?['favourite_quote_id'];
-      final quoteDocId = state.quoteList[state.currentIndex ?? 0].docID;
+      final quoteDocId = state.quoteList[state.currentIndex].docID;
       if (favouriteQuoteDocIdList != null) {
         if (favouriteQuoteDocIdList.contains(quoteDocId)) {
           /// remove quote from list of favourites

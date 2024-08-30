@@ -25,7 +25,7 @@ class QuoteState extends Equatable {
     this.user = UserModel.empty,
 
     // TODO
-    this.currentIndex,
+    this.currentIndex = 0,
     this.favouriteQuoteList = const [],
   });
 
@@ -33,7 +33,7 @@ class QuoteState extends Equatable {
   final APIStatus apiStatus;
   final List<QuoteModel> quoteList;
   final UserModel user;
-  final int? currentIndex;
+  final int currentIndex;
   final List<QuoteModel> favouriteQuoteList;
 
   @override
